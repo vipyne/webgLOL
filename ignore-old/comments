@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>webGLOL</title>
+</head>
+<body>
+<script type="text/javascript">
+
+function webglol() {
+  // get canvas element
+  var webglolCanvas = document.getElementById('webglol');
+  // define WebGLRenderingContext
+  //// getContext(context, options)
+  var gl = webglolCanvas.getContext('experimental-webgl');
+
+  // Specify the color values used when clearing color buffers.
+  //// gl.clearColor(red, green, blue, alpha)
+  gl.clearColor(0, 0, 0, .2); 
+
+  // clears buffers to preset values specified by clearColor(), clearDepth() and clearStencil().
+  //// gl.clear(gl.COLOR_BUFFER_BIT || gl.DEPTH_BUFFER_BIT || gl.STENCIL_BUFFER_BIT)
+  gl.clear(gl.COLOR_BUFFER_BIT);
+
+  var webglolProgram = gl.createProgram();
+
+  // gl.createShader(gl.VERTEX_SHADER || gl.FRAGMENT_SHADER)
+  var vertexShader   = gl.createShader(gl.VERTEX_SHADER);
+  var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+
+                         // attribute- input value that changes the vertices
+                         // vec3- 3D floating point vector
+  var vertexShaderGLSL = "attribute vec3 pos;            " +
+                         "void main() {                  " +
+                         // gl_Position- 4D vector representing the final processed vertex position.
+                         // x, y, z are values are passed in... 4th is a scaling thing.
+                         " gl_Position = vec4(pos, 2.0); " +
+                         "}                              ";
+
+  // var fragmentShaderGLSL = "uniform vec2 u_resolution;                             " +
+  var fragmentShaderGLSL = "void main() {                          " +
+                           // "void main() {                             " +
+                           // gl_FragColor- 4D vector [ R, G, B, A ]
+                           " vec2 u_resolution = vec2(300.0); " + 
+                           // " vec2 st = gl_FragCoord.xy/u_resolution; " + 
+                           // " vec2 st = gl_FragCoord.xy/u_resolution; " + 
+                           " gl_FragColor = vec4(0.3, 0.5, 0.9, 1.0); " + 
+                           // " gl_FragColor = vec4(st.x, st.y, 0.9, 1.0); " + 
+                           "}                                         ";
+
+  // gl.shaderSource(shader, source)
+  gl.shaderSource(vertexShader, vertexShaderGLSL);
+  gl.shaderSource(fragmentShader, fragmentShaderGLSL);
+
+  // gl.compileShader(shader)
+  gl.compileShader(vertexShader);
+  gl.compileShader(fragmentShader);
+
+  // gl.attachShader(webgl program, shader)
+  gl.attachShader(webglolProgram, vertexShader);
+  gl.attachShader(webglolProgram, fragmentShader);
+
+  gl.linkProgram(webglolProgram);
+
+  var triangleAttributePosition = gl.getAttribLocation(webglolProgram, 'pos');
+  // set the resolution
+  // var resolutionLocation = gl.getUniformLocation(webglolProgram, 'u_resolution');
+  // console.log('w',webglolCanvas.width)
+  // gl.uniform2i(resolutionLocation, webglolCanvas.width, webglolCanvas.height);
+  var vertices = [];
+
+  // `O`
+  var numberOfTriangles = 100;
+  var degreesPerTriangle = (4 * Math.PI) / numberOfTriangles;
+  var centerX = 0.5;
+
+  for(var i = 0; i < numberOfTriangles; i++) {
+      var index = i * 3;
+      var angle = degreesPerTriangle * i;
+      var scale = 2;
+
+      vertices[index] = Math.cos(angle) / scale;               // x
+      vertices[index + 1] = Math.sin(angle) / scale + centerX; // y
+      vertices[index + 2] = 0;                                 // z
+  }
+
+  // `L`s
+  vertices.push( -0.5, 0.0, 0.0, 
+                 -1.5, 0.0, 0.0,
+                 -1.5, 1.0, 0.0, // first `L`
+                  0.5, 1.0, 0.0,
+                  0.5, 0.0, 0.0,
+                  1.5, 0.0, 0.0 ); // second `L`
+
+  var verticesFloatArray = new Float32Array(vertices);
+
+
+  gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+  gl.bufferData(gl.ARRAY_BUFFER, verticesFloatArray, gl.STATIC_DRAW);
+  gl.enableVertexAttribArray(triangleAttributePosition);
+  gl.vertexAttribPointer(triangleAttributePosition, 3, gl.FLOAT, false, 0, 0);
+
+  gl.useProgram(webglolProgram);
+
+  // drawArrays(primatitve shape, start index, number of values to be rendered)
+  gl.drawArrays(gl.TRIANGLES, numberOfTriangles, 6); // draw the `L`s
+  gl.drawArrays(gl.TRIANGLE_FAN, 0, numberOfTriangles - 5); // draw the `O`
+}
+
+window.onload = webglol;
+
+</script>
+<canvas id="webglol" width="300" height="300"></canvas>
+</body>
+</html>
