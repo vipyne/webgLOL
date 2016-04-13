@@ -101,8 +101,7 @@ function webglol() {
       var scale = 2;
 
       vertices[index] = Math.cos(angle) / scale;               // x
-      vertices[index + 1] = Math.sin(angle) / scale; // y
-      // vertices[index + 1] = Math.sin(angle) / scale + centerX; // y
+      vertices[index + 1] = Math.sin(angle) / scale + centerX; // y
       vertices[index + 2] = 0;                                 // z
   }
 
