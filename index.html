@@ -13,42 +13,14 @@ attribute vec3 pos;
 void main() {     
   // gl_Position- 4D vector representing the final processed vertex position           
   // x, y, z are values are passed in... 4th is a scaling thing.
-  gl_Position = vec4(pos, 0.5); 
+  gl_Position = vec4(pos, 2.0); 
 }  
 </script>
 
 <script id="fragment-shader" type="x-shader/x-fragment">
-// precision- ... and why do we need this?
-precision mediump float;  //
-// uniform- ...
-uniform vec2 u_resolution;  
-uniform float u_time;
-
-// Plot a line on Y using a value between 0.0-1.0
-float plot(vec2 st, float plottedLine){
-  return  smoothstep( plottedLine - 0.02, plottedLine, st.y) - smoothstep( plottedLine, plottedLine + 0.02, st.y);
-}
-
 void main() {                   
-  // gl_FragCoord- ...
-  vec2 st = gl_FragCoord.xy/u_resolution; 
-
-  float y = st.x;
-  vec3 color = vec3(y);
-
-  // Plot a line
-  float green = plot(st,y);
-  float something = 1.0 - green;
-  // float somethingElse = something * color; // why doesn't this work
-  vec3 idk = green * vec3(0.0,1.0,0.0);
-
-  // color = somethingElse + green * vec3(0.0,1.0,0.0);
-  color = something * color + idk;
-  // color = something * color + green * vec3(0.0,1.0,0.0);
-
   // gl_FragColor- 4D vector [ R, G, B, A ]
-  // gl_FragColor = vec4(st.x, abs(sin(u_time)), st.y, 1); 
-  gl_FragColor = vec4(color,1.0);
+  gl_FragColor = vec4(0.2, 0.8, 0.6, 1.0);
 }  
 </script>
 
@@ -96,16 +68,6 @@ function webglol() {
 
   var triangleAttributePosition = gl.getAttribLocation(webglolProgram, 'pos');
 
-  // set the resolution
-  var resolutionLocation = gl.getUniformLocation(webglolProgram, 'u_resolution');
-  gl.uniform2f(resolutionLocation, webglolCanvas.width, webglolCanvas.height);
-
-  // timing
-  this.startTime = this.startTime ? this.startTime : new Date().getTime() / 10000;
-  var time = new Date().getTime() / 10000 - this.startTime;
-  var timeLocation = gl.getUniformLocation(webglolProgram, 'u_time');
-  gl.uniform1f(timeLocation, time);
-
   var vertices = [];
 
   // `O`
@@ -119,8 +81,7 @@ function webglol() {
       var scale = 2;
 
       vertices[index] = Math.cos(angle) / scale;               // x
-      vertices[index + 1] = Math.sin(angle) / scale; // y
-      // vertices[index + 1] = Math.sin(angle) / scale + centerX; // y
+      vertices[index + 1] = Math.sin(angle) / scale + centerX; // y
       vertices[index + 2] = 0;                                 // z
   }
 
