@@ -30,7 +30,10 @@ void main() {
 
   // gl_FragColor- 4D vector [ R, G, B, A ]
   gl_FragColor = vec4(st.x, abs(sin(u_time)), st.y, 1); 
-  // gl_FragColor = vec4(color,1.0);
+  // value of Red is determined by the x value (0-1 from left to right)
+  // value of Green is determined by trigonometry and tbd time magic
+  // value of Blue is determined by the y value (0-1 from left to right)
+  // value of Alpha is constant 1
 }  
 </script>
 
