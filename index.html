@@ -7,87 +7,40 @@
 <body>
 
 <script id="vertex-shader" type="x-shader/x-vertex">
-// attribute- input value that changes the vertices
-// vec3- 3D floating point vector
 attribute vec3 pos;         
 void main() {     
-  // gl_Position- 4D vector representing the final processed vertex position           
-  // x, y, z are values are passed in... 4th is a scaling thing.
-  gl_Position = vec4(pos, 0.5); 
+  gl_Position = vec4(pos, 2.0); 
 }  
 </script>
 
 <script id="fragment-shader" type="x-shader/x-fragment">
-// precision- ... and why do we need this?
-precision mediump float;  //
-// uniform- ...
-uniform vec2 u_resolution;  
-uniform float u_time;
-
-// Plot a line on Y using a value between 0.0-1.0
-float plot(vec2 st, float plottedLine){
-  return  smoothstep( plottedLine - 0.02, plottedLine, st.y) - smoothstep( plottedLine, plottedLine + 0.02, st.y);
-}
-
 void main() {                   
-  // gl_FragCoord- ...
-  vec2 st = gl_FragCoord.xy/u_resolution; 
-
-  float y = st.x;
-  vec3 color = vec3(y);
-
-  // Plot a line
-  float green = plot(st,y);
-  float something = 1.0 - green;
-  // float somethingElse = something * color; // why doesn't this work
-  vec3 idk = green * vec3(0.0,1.0,0.0);
-
-  // color = somethingElse + green * vec3(0.0,1.0,0.0);
-  color = something * color + idk;
-  // color = something * color + green * vec3(0.0,1.0,0.0);
-
-  // gl_FragColor- 4D vector [ R, G, B, A ]
-  // gl_FragColor = vec4(st.x, abs(sin(u_time)), st.y, 1); 
-  gl_FragColor = vec4(color,1.0);
+  gl_FragColor = vec4(0.2, 0.8 ,0.6 ,1.0);
 }  
 </script>
 
 <script type="text/javascript">
 
 function webglol() {
-  // get canvas element
   var webglolCanvas = document.getElementById('webglol');
-  // define WebGLRenderingContext
-  //// getContext(context, options)
   var gl = webglolCanvas.getContext('experimental-webgl');
-
-  // Specify the color values used when clearing color buffers.
-  //// gl.clearColor(red, green, blue, alpha)
   gl.clearColor(0, 0, 0, .2); 
-
-  // clears buffers to preset values specified by clearColor(), clearDepth() and clearStencil().
-  //// gl.clear(gl.COLOR_BUFFER_BIT || gl.DEPTH_BUFFER_BIT || gl.STENCIL_BUFFER_BIT)
   gl.clear(gl.COLOR_BUFFER_BIT);
 
   var webglolProgram = gl.createProgram();
 
-  // time to throw some shade
   var vertexShaderScript = document.getElementById('vertex-shader').text;
   var fragmentShaderScript = document.getElementById('fragment-shader').text;
 
-  // gl.createShader(gl.VERTEX_SHADER || gl.FRAGMENT_SHADER)
   var vertexShader   = gl.createShader(gl.VERTEX_SHADER);
   var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
 
-  // gl.shaderSource(shader, source)
   gl.shaderSource(vertexShader, vertexShaderScript);
   gl.shaderSource(fragmentShader, fragmentShaderScript);
 
-  // gl.compileShader(shader)
   gl.compileShader(vertexShader);
   gl.compileShader(fragmentShader);
 
-  // gl.attachShader(webgl program, shader)
   gl.attachShader(webglolProgram, vertexShader);
   gl.attachShader(webglolProgram, fragmentShader);
 
@@ -96,41 +49,11 @@ function webglol() {
 
   var triangleAttributePosition = gl.getAttribLocation(webglolProgram, 'pos');
 
-  // set the resolution
-  var resolutionLocation = gl.getUniformLocation(webglolProgram, 'u_resolution');
-  gl.uniform2f(resolutionLocation, webglolCanvas.width, webglolCanvas.height);
-
-  // timing
-  this.startTime = this.startTime ? this.startTime : new Date().getTime() / 10000;
-  var time = new Date().getTime() / 10000 - this.startTime;
-  var timeLocation = gl.getUniformLocation(webglolProgram, 'u_time');
-  gl.uniform1f(timeLocation, time);
-
   var vertices = [];
 
-  // `O`
-  var numberOfTriangles = 100;
-  var degreesPerTriangle = (4 * Math.PI) / numberOfTriangles;
-  var centerX = 0.5;
-
-  for(var i = 0; i < numberOfTriangles; i++) {
-      var index = i * 3;
-      var angle = degreesPerTriangle * i;
-      var scale = 2;
-
-      vertices[index] = Math.cos(angle) / scale;               // x
-      vertices[index + 1] = Math.sin(angle) / scale; // y
-      // vertices[index + 1] = Math.sin(angle) / scale + centerX; // y
-      vertices[index + 2] = 0;                                 // z
-  }
-
-  // `L`s
   vertices.push( -0.5, 0.0, 0.0, 
                  -1.5, 0.0, 0.0,
-                 -1.5, 1.0, 0.0, // first `L`
-                  0.5, 1.0, 0.0,
-                  0.5, 0.0, 0.0,
-                  1.5, 0.0, 0.0 ); // second `L`
+                 -1.5, 1.0, 0.0);
 
   var verticesFloatArray = new Float32Array(vertices);
 
@@ -139,13 +62,10 @@ function webglol() {
   gl.enableVertexAttribArray(triangleAttributePosition);
   gl.vertexAttribPointer(triangleAttributePosition, 3, gl.FLOAT, false, 0, 0);
 
-  // drawArrays(primatitve shape, start index, number of values to be rendered)
-  gl.drawArrays(gl.TRIANGLES, numberOfTriangles, 6); // draw the `L`s
-  gl.drawArrays(gl.TRIANGLE_FAN, 0, numberOfTriangles - 5); // draw the `O`
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
 }
 
 window.onload = webglol;
-// setInterval(webglol, 100);
 
 </script>
 <canvas id="webglol" width="300" height="300"></canvas>
