@@ -26,28 +26,29 @@ uniform float u_time;
 
 // Plot a line on Y using a value between 0.0-1.0
 float plot(vec2 st, float plottedLine){
-  return  smoothstep( plottedLine - 0.02, plottedLine, st.y) - smoothstep( plottedLine, plottedLine + 0.02, st.y);
+  float left = smoothstep( plottedLine - 0.02, plottedLine, st.y);
+  float right = smoothstep( plottedLine, plottedLine + 0.02, st.y);
+
+  return  left - right;
 }
 
 void main() {                   
   // gl_FragCoord- ...
   vec2 st = gl_FragCoord.xy/u_resolution; 
 
-  float y = st.x;
-  vec3 color = vec3(y);
+  float plottedLine = mod(0.5, st.x); // this is cool but i have no idea how it works
+
+  vec3 color = vec3(plottedLine);
 
   // Plot a line
-  float green = plot(st,y);
-  float something = 1.0 - green;
-  // float somethingElse = something * color; // why doesn't this work
-  vec3 idk = green * vec3(0.0,1.0,0.0);
+  float greenLine = plot(st, plottedLine);
+  float something = 1.0 - greenLine;
+  vec3 somethingElse = something * color;
+  vec3 idk = greenLine * vec3(0.0,1.0,0.0);
 
-  // color = somethingElse + green * vec3(0.0,1.0,0.0);
-  color = something * color + idk;
-  // color = something * color + green * vec3(0.0,1.0,0.0);
+  color = somethingElse + idk;
 
   // gl_FragColor- 4D vector [ R, G, B, A ]
-  // gl_FragColor = vec4(st.x, abs(sin(u_time)), st.y, 1); 
   gl_FragColor = vec4(color,1.0);
 }  
 </script>
