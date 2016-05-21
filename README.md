@@ -1,5 +1,4 @@
-# taste the rainbow
+# high school math
 
-i was super happy when i got this to work
+i've been watching [these](https://www.khanacademy.org/math/linear-algebra)
 
-TODO: add some information about uniforms
