@@ -5,3 +5,4 @@ this is a playground for teaching myself webGL.  each branch adds the next movin
 * 1-hello triangle
 * 2-LOL
 * 3-taste the rainbow
+* 4-high school math
