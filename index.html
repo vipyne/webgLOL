@@ -35,10 +35,18 @@ float plot(vec2 st, float plottedLine){
 
 void main() {                   
   // gl_FragCoord- ...
-  vec2 st = gl_FragCoord.xy/u_resolution; 
+  // vec2 st = gl_FragCoord.xy/u_resolution; 
+  // vec2 st = u_resolution; 
+
+  // writing it like this helps me absorb the x,y coord 2d vector
+  vec2 st;
+  st.x = gl_FragCoord.x/u_resolution[0]; 
+  st.y = gl_FragCoord.y/u_resolution[1]; 
 
   // float line = sin(st.x * 3.14); // pi is magical
-  float line = (mod(0.5, st.x - 0.5)) * 0.5 + 0.5; // horizontal mirror of above line
+  // float line = st.x; // linear
+  float line = (mod(0.5, st.x - 0.5)) * 0.5 + 0.5; // not sure exactly how mod works
+  // float line = sin(  st.x        * 3.14 ); // parabola
   // float line = cos( (st.x + 0.5) * 3.14 ) + 1.0; // horizontal mirror of above line
 
   vec3 color = vec3(line);
@@ -47,9 +55,11 @@ void main() {
 
   // Plot a line
   float plottedLine = plot(st, line);
-  float something = 1.0 - plottedLine; // really wish i knew what this was... something about alpha?
-  vec3 somethingElse = something * color;
-  vec3 mixedGreen = plottedLine * mix(powerColor, otherColor, something);
+  float canvasFillScalar = 1.0 - plottedLine; // really wish i knew what this was... something about alpha?
+  vec3 somethingElse = canvasFillScalar * color;
+  // vec3 mixedGreen = plottedLine * mix(powerColor, otherColor, line);
+  // vec3 mixedGreen = plottedLine * mix(powerColor, otherColor, plottedLine);
+  vec3 mixedGreen = plottedLine * mix(powerColor, otherColor, canvasFillScalar);
 
   color = somethingElse + mixedGreen;
 
