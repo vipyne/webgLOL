@@ -36,13 +36,14 @@ void main() {
   // gl_FragCoord- ...
   vec2 st = gl_FragCoord.xy/u_resolution; 
 
-  float plottedLine = mod(0.5, st.x); // this is cool but i have no idea how it works
+  // float plottedLine = sin(st.x * 3.14); // pi is magical
+  float plottedLine = cos( (st.x + 0.5) * 3.14 ) + 1.0; // horizontal mirror of above line
 
   vec3 color = vec3(plottedLine);
 
   // Plot a line
   float greenLine = plot(st, plottedLine);
-  float something = 1.0 - greenLine;
+  float something = 1.0 - greenLine; // really wish i knew what this was... something about alpha?
   vec3 somethingElse = something * color;
   vec3 idk = greenLine * vec3(0.0,1.0,0.0);
 
@@ -117,7 +118,7 @@ function webglol() {
   for(var i = 0; i < numberOfTriangles; i++) {
       var index = i * 3;
       var angle = degreesPerTriangle * i;
-      var scale = 2;
+      var scale = 1;
 
       vertices[index] = Math.cos(angle) / scale;               // x
       vertices[index + 1] = Math.sin(angle) / scale;           // y
