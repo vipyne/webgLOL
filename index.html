@@ -26,8 +26,9 @@ uniform float u_time;
 
 // Plot a line on Y using a value between 0.0-1.0
 float plot(vec2 st, float plottedLine){
-  float left = smoothstep( plottedLine - 0.02, plottedLine, st.y);
-  float right = smoothstep( plottedLine, plottedLine + 0.02, st.y);
+  float lineGradient = 0.13;
+  float left = smoothstep( plottedLine - lineGradient, plottedLine, st.y);
+  float right = smoothstep( plottedLine, plottedLine + lineGradient, st.y);
 
   return  left - right;
 }
@@ -36,18 +37,21 @@ void main() {
   // gl_FragCoord- ...
   vec2 st = gl_FragCoord.xy/u_resolution; 
 
-  // float plottedLine = sin(st.x * 3.14); // pi is magical
-  float plottedLine = cos( (st.x + 0.5) * 3.14 ) + 1.0; // horizontal mirror of above line
+  // float line = sin(st.x * 3.14); // pi is magical
+  float line = (mod(0.5, st.x - 0.5)) * 0.5 + 0.5; // horizontal mirror of above line
+  // float line = cos( (st.x + 0.5) * 3.14 ) + 1.0; // horizontal mirror of above line
 
-  vec3 color = vec3(plottedLine);
+  vec3 color = vec3(line);
+  vec3 powerColor = vec3(0.0, 0.66, 0.66);
+  vec3 otherColor = vec3(1.0, 0.0, 0.0);
 
   // Plot a line
-  float greenLine = plot(st, plottedLine);
-  float something = 1.0 - greenLine; // really wish i knew what this was... something about alpha?
+  float plottedLine = plot(st, line);
+  float something = 1.0 - plottedLine; // really wish i knew what this was... something about alpha?
   vec3 somethingElse = something * color;
-  vec3 idk = greenLine * vec3(0.0,1.0,0.0);
+  vec3 mixedGreen = plottedLine * mix(powerColor, otherColor, something);
 
-  color = somethingElse + idk;
+  color = somethingElse + mixedGreen;
 
   // gl_FragColor- 4D vector [ R, G, B, A ]
   gl_FragColor = vec4(color,1.0);
