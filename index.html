@@ -45,8 +45,8 @@ void main() {
 
   // float line = sin(st.x * 3.14); // pi is magical
   // float line = st.x; // linear
-  float line = (mod(0.5, st.x - 0.5)) * 0.5 + 0.5; // not sure exactly how mod works
-  // float line = sin(  st.x        * 3.14 ); // parabola
+  // float line = (mod(0.5, st.x - 0.5)) * 0.5 + 0.5; // not sure exactly how mod works
+  float line = sin(  st.x        * 3.14 ); // sin wave BUT it looks like a parabola
   // float line = cos( (st.x + 0.5) * 3.14 ) + 1.0; // horizontal mirror of above line
 
   vec3 color = vec3(line);
