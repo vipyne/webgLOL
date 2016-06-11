@@ -6,3 +6,5 @@ this is a playground for teaching myself webGL.  each branch adds the next movin
 * 2-LOL
 * 3-taste the rainbow
 * 4-high school math
+* 5-turn-around-flip-it-and-reverse-it
+* 6-move-it-along
