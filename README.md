@@ -9,6 +9,6 @@ All of these are in some state of work in progress, as I'd like to eventually ha
 * 1-hello triangle (the hello world of openGL)
 * 2-LOL (more than just triangles!)
 * 3-taste the rainbow (animating colors)
-* 4-high school math (rememmbering linear algebra)
+* 4-high school math (remembering linear algebra)
 * 5-turn around flip it and reverse it (rotating the matrix)
 * 6-move it along (interactive events) (wip)
