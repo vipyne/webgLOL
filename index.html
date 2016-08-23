@@ -52,11 +52,20 @@ void main() {
   xyCoord_v2.x = gl_FragCoord.x/u_resolution[0]; 
   xyCoord_v2.y = gl_FragCoord.y/u_resolution[1]; 
 
+<<<<<<< Updated upstream
   // float line = sin(xyCoord_v2.x * 3.14); // pi is magical
   float line = xyCoord_v2.x; // linear
   // float line = (mod(0.5, xyCoord_v2.x - 0.5)) * 0.5 + 0.5; // not sure exactly how mod works
   // float line = sin(  xyCoord_v2.x        * 3.14 ); // sin wave BUT it looks like a parabola
   // float line = cos( (xyCoord_v2.x + 0.5) * 3.14 ) + 1.0; // horizontal mirror of above line
+=======
+  // float line = sin(st.x * 3.14); // pi is magical
+  // float line = st.x; // linear
+  float line = (mod(1.0, st.x)); // not sure exactly how mod works
+  // float line = (mod(0.5, st.x - 0.5)) * 0.5 + 0.5; // not sure exactly how mod works
+  // float line = sin(  st.x        * 3.14 ); // sin wave BUT it looks like a parabola
+  // float line = cos( (st.x + 0.5) * 3.14 ) + 1.0; // horizontal mirror of above line
+>>>>>>> Stashed changes
 
   vec3 finalColor_v3;
   // vec3 finalColor_v3 = vec3(line);
