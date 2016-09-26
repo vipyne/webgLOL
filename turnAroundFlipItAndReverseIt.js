@@ -50,8 +50,19 @@ function webglol() {
   var timeLocation = gl.getUniformLocation(webglolProgram, 'u_time');
   gl.uniform1f(timeLocation, time);
 
+  // spin counter
+  this.angleCounter = this.angleCounter ? this.angleCounter : 360.0; // 360 degrees in a circle
+  window.requestAnimationFrame(function increaseAngleCounter() {
+    if (this.angleCounter === 0.0) {
+      this.angleCounter = 360.0;
+    } else {
+      this.angleCounter -= 1.0;
+    }
+    return this.angleCounter;
+  });
+
   // rotation
-  var angle = 45.0;
+  var angle = this.angleCounter;
   var radian = Math.PI * angle / 180.0;
   var cosR = Math.cos(radian);
   var sinR = Math.sin(radian);
@@ -88,6 +99,12 @@ function webglol() {
                   0.5, 0.0, 0.0,
                   1.5, 0.0, 0.0 ); // second `L`
 
+  // center dot
+  vertices.push( -0.01, 0.01, 0.0,
+                 -0.01, -0.01, 0.0,
+                  0.01, 0.01, 0.0,
+                  0.01, -0.01, 0.0);
+
   var verticesFloatArray = new Float32Array(vertices);
 
   gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
@@ -97,8 +114,11 @@ function webglol() {
 
   // drawArrays(primatitve shape, start index, number of values to be rendered)
   gl.drawArrays(gl.TRIANGLES, numberOfTriangles, 6); // draw the `L`s
-  gl.drawArrays(gl.TRIANGLE_FAN, 0, numberOfTriangles - 5); // draw the `O`
+  gl.drawArrays(gl.TRIANGLE_STRIP, numberOfTriangles + 6, 4); // draw the center dot
+  gl.drawArrays(gl.TRIANGLE_FAN, 0, numberOfTriangles - 9); // draw the `O`
+
+  requestAnimationFrame(webglol);
 }
 
-// window.onload = webglol;
-setInterval(webglol, 100);
+window.onload = webglol;
+// setInterval(webglol, 100);
