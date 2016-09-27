@@ -17,6 +17,7 @@ uniform float u_cos, u_sin;
 
 // &&&&&& usual way to do things
 uniform mat4 u_model_m;
+uniform mat4 u_camera_m;
 // &&&&&&
 
 // ######
@@ -36,7 +37,7 @@ void main() {
 ////////
 
 // &&&&&& (yes this just overwrites the above... keeping there for posterity)
-  gl_Position = u_model_m * vec4(pos, 2.0);
+  gl_Position = u_model_m * u_camera_m * vec4(pos, 2.0);
 // &&&&&&
 
 // ######

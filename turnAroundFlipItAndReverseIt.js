@@ -77,22 +77,26 @@ function webglol() {
   // rotation way 2; (usual)
   var cos = Math.cos(radian);
   var sin = Math.sin(radian);
-  var matrixX = new Float32Array([ cos, sin, 0, 0, // X
-                                  -sin, cos, 0, 0,
-                                   0,   0,   1, 0,
-                                   0,   0,   0, 1]);
-  var matrixY = new Float32Array([ cos, sin, 0, 0, // Y
-                                  -sin, cos, 0, 0,
-                                   0,   0,   1, 0,
-                                   0,   0,   0, 1]);
-  var matrixZ = new Float32Array([ cos,-sin, 0, 0, // Z
-                                   sin, cos, 0, 0,
-                                   0,   0,   1, 0,
-                                   0,   0,   0, 1]);
+  var matrixX = [1,   0,   0, 0, // X
+                 0, cos,-sin, 0,
+                 0, sin, cos, 0,
+                 0,   0,   0, 1];
+  var matrixY = [cos, 0, sin, 0, // Y
+                 0,   1,   0, 0,
+                -sin, 0, cos, 0,
+                 0,   0,   0, 1];
+  var matrixZ = [cos,-sin, 0, 0, // Z
+                 sin, cos, 0, 0,
+                 0,   0,   1, 0,
+                 0,   0,   0, 1];
+
   var u_model_mLocation = gl.getUniformLocation(webglolProgram, 'u_model_m');
+  var u_camera_mLocation = gl.getUniformLocation(webglolProgram, 'u_camera_m');
   // gl.uniformMatrix4fv(uniformLocation, weather or not to transpose matrix to column first from row first, matrix array)
   // second arg is always set to false-- this is to preserve arg order of same function in openGL
-  gl.uniformMatrix4fv(u_model_mLocation, false, matrixZ);
+  gl.uniformMatrix4fv(u_model_mLocation, false, new Float32Array(matrixX));
+
+  gl.uniformMatrix4fv(u_camera_mLocation, false, new Float32Array(matrixY));
 
   ///// %%%%% red dot
   var colorLocation = gl.getAttribLocation(webglolProgram, 'aVertexColor');
