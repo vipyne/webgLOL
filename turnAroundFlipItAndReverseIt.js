@@ -95,10 +95,10 @@ function webglol() {
   // second arg is always set to false-- this is to preserve arg order of same function in openGL
   gl.uniformMatrix4fv(u_model_mLocation, false, matrixZ);
 
-  // ///// %%%%% red dot
-  // var colorLocation = gl.getAttribLocation(webglolProgram, 'aVertexColor');
-  // gl.enableVertexAttribArray(colorLocation);
-  // ///// %%%%%
+  ///// %%%%% red dot
+  var colorLocation = gl.getAttribLocation(webglolProgram, 'aVertexColor');
+  gl.enableVertexAttribArray(colorLocation);
+  ///// %%%%%
 
   // vertices
   var vertices = [];
@@ -136,6 +136,7 @@ function webglol() {
 
   var vertexPosBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, vertexPosBuffer);
+  // gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
   gl.bufferData(gl.ARRAY_BUFFER, verticesFloatArray, gl.DYNAMIC_DRAW);
   gl.enableVertexAttribArray(triangleAttributePosition);
   gl.vertexAttribPointer(triangleAttributePosition, 3, gl.FLOAT, false, 0, 0);
@@ -146,15 +147,17 @@ function webglol() {
   gl.drawArrays(gl.TRIANGLE_FAN, 0, numberOfTriangles - 9); // draw the `O`
 
   ///// %%%%%
-  // var colorBuffer = gl.createBuffer();
-  // gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-  // var colors = [1.0, 0.0, 0.0, 1.0,
-  //               0.0, 0.0, 0.0, 1.0,
-  //               0.0, 0.0, 0.0, 1.0];
+  var colorBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+  var colors = [1.0, 0.0, 0.0, 1.0,
+                0.0, 0.0, 0.0, 1.0,
+                0.0, 0.0, 0.0, 1.0];
 
-  // var colorArray = new Float32Array(colors);
+  var colorArray = new Float32Array(colors);
 
-  // gl.bufferData(gl.ARRAY_BUFFER, colorArray, gl.DYNAMIC_DRAW);
+  gl.bufferData(gl.ARRAY_BUFFER, colorArray, gl.DYNAMIC_DRAW);
+  gl.enableVertexAttribArray(colorLocation);
+  gl.vertexAttribPointer(colorLocation, 3, gl.FLOAT, false, 0, 0);
   // colorBuffer.itemSize = 4;
   // colorBuffer.numItems =3;
 
