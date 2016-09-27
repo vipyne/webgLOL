@@ -38,7 +38,7 @@ function webglol() {
   gl.linkProgram(webglolProgram);
   gl.useProgram(webglolProgram);
 
-  var triangleAttributePosition = gl.getAttribLocation(webglolProgram, 'pos');
+  // var triangleAttributePosition = gl.getAttribLocation(webglolProgram, 'pos');
 
   // set the resolution
   var resolutionLocation = gl.getUniformLocation(webglolProgram, 'u_resolution');
@@ -61,20 +61,9 @@ function webglol() {
     return this.angleCounter;
   });
 
+  // rotation
   var angle = this.angleCounter;
-
-  // rotation way 1; (silly)
   var radian = Math.PI * angle / 180.0;
-  var cosR = Math.cos(radian);
-  var sinR = Math.sin(radian);
-
-  var u_cosLocation = gl.getUniformLocation(webglolProgram, 'u_cos');
-  var u_sinLocation = gl.getUniformLocation(webglolProgram, 'u_sin');
-
-  gl.uniform1f(u_cosLocation, cosR);
-  gl.uniform1f(u_sinLocation, sinR);
-
-  // rotation way 2; (usual)
   var cos = Math.cos(radian);
   var sin = Math.sin(radian);
   var matrixX = [1,   0,   0, 0, // X
@@ -112,60 +101,38 @@ function webglol() {
                   0.01,  0.01, 0.0,
                   0.01, -0.01, 0.0); // actually a square
 
-  // `L`s
-  vertices.push( -0.5, 0.0, 0.0,
-                 -1.5, 0.0, 0.0,
-                 -1.5, 1.0, 0.0, // first `L`
-                  0.5, 1.0, 0.0,
-                  0.5, 0.0, 0.0,
-                  1.5, 0.0, 0.0 ); // second `L`
-
-  // `O`
-  var numberOfTriangles = 100;
-  var degreesPerTriangle = (4 * Math.PI) / numberOfTriangles;
-  var centerX = 0.5;
-
-  for(var i = 10; i < numberOfTriangles + 11; i++) {
-      var index = i * 3;
-      var angle = degreesPerTriangle * i;
-      var scale = 2;
-
-      vertices[index] = Math.cos(angle) / scale;               // x
-      vertices[index + 1] = Math.sin(angle) / scale + centerX; // y
-      vertices[index + 2] = 0;                                 // z
-  }
+  // // box
+  // vertices.push( -0.51,  0.51, 0.0,
+  //                -0.51, -0.51, 0.0,
+  //                 0.51,  0.51, 0.0,
+  //                 0.51, -0.51, 0.0); // actually a square
 
   var verticesFloatArray = new Float32Array(vertices);
 
   gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
   gl.bufferData(gl.ARRAY_BUFFER, verticesFloatArray, gl.DYNAMIC_DRAW);
-  gl.enableVertexAttribArray(triangleAttributePosition);
-  gl.vertexAttribPointer(triangleAttributePosition, 3, gl.FLOAT, false, 0, 0);
-
-  // drawArrays(primatitve shape, start index, number of values to be rendered)
-  gl.drawArrays(gl.TRIANGLES, 4, 6); // draw the `L`s
-  gl.drawArrays(gl.TRIANGLE_FAN, 10, numberOfTriangles - 9); // draw the `O`
-  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4); // draw the center dot
+  // gl.enableVertexAttribArray(triangleAttributePosition);
+  // gl.vertexAttribPointer(triangleAttributePosition, 3, gl.FLOAT, false, 0, 0);
 
   ///// %%%%%
   var colorBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-  var red    = [1.0, 0.0, 0.0, 1.0,
-                1.0, 0.0, 0.0, 1.0,
-                1.0, 0.0, 0.0, 1.0,
-                1.0, 0.0, 0.0, 1.0];
-
   var verticesLength = vertices.length;
   var colorArray = new Float32Array(verticesLength);
-    colorArray.set([1.0, -1.0, -1.0,
-    1.0, -1.0, -1.0,
-    1.0, -1.0, -1.0,
-    1.0, -1.0, -1.0], 0);
+  colorArray.set([1.0, -1.0, -1.0,
+                  1.0, -1.0, -1.0,
+                  1.0, -1.0, -1.0,
+                  1.0, -1.0, -1.0], 0);
 
   gl.bufferData(gl.ARRAY_BUFFER, colorArray, gl.DYNAMIC_DRAW);
   gl.enableVertexAttribArray(colorLocation);
   gl.vertexAttribPointer(colorLocation, 3, gl.FLOAT, false, 0, 0);
   ///// %%%%%
+
+
+  // drawArrays(primatitve shape, start index, number of values to be rendered)
+  // gl.drawArrays(gl.TRIANGLES, 4, 8); // draw the box
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4); // draw the center dot
 
   // ------------------------------
   requestAnimationFrame(webglol);

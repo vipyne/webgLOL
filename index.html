@@ -9,40 +9,17 @@
 <script id="vertex-shader" type="x-shader/x-vertex">
 // attribute- input value that changes the vertices
 // vec3- 3D floating point vector
-attribute vec3 pos;
+// attribute vec3 pos;
 
-//////// silly way to do things
-uniform float u_cos, u_sin;
-////////
-
-// &&&&&& usual way to do things
 uniform mat4 u_model_m;
 uniform mat4 u_camera_m;
-// &&&&&&
 
-// ######
 attribute vec4 aVertexColor;
 varying vec4 vertexColor;
-// ######
 
 void main() {
-
-////////
-  // gl_Position- 4D vector representing the final processed vertex position
-  // x, y, z are values are passed in... 4th is w (scale...?).
-  gl_Position.x = (pos.x * u_cos - pos.y * u_sin);
-  gl_Position.y = (pos.x * u_sin + pos.y * u_cos);
-  gl_Position.z = 0.0;
-  gl_Position.w = 2.0;
-////////
-
-// &&&&&& (yes this just overwrites the above... keeping there for posterity)
-  gl_Position = u_model_m * u_camera_m * vec4(pos, 2.0);
-// &&&&&&
-
-// ######
+  // gl_position = u_model_m * u_camera_m * vec4(pos, 2.0);
   vertexColor = aVertexColor;
-// ######
 }
 </script>
 
@@ -94,7 +71,7 @@ void main() {
 }
 </script>
 
-<script src="turnAroundFlipItAndReverseIt.js" type="text/javascript"></script>
+<script src="boxingDay.js" type="text/javascript"></script>
 
 <canvas id="webglol" width="600" height="600"></canvas>
 </body>
