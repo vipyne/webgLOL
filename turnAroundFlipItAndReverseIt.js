@@ -149,11 +149,22 @@ function webglol() {
   ///// %%%%%
   var colorBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-  var colors = [1.0, 0.0, 0.0, 1.0,
-                0.0, 0.0, 0.0, 1.0,
-                0.0, 0.0, 0.0, 1.0];
+  var red    = [1.0, 0.0, 0.0, 1.0,
+                1.0, 0.0, 0.0, 1.0,
+                1.0, 0.0, 0.0, 1.0,
+                1.0, 0.0, 0.0, 1.0];
 
-  var colorArray = new Float32Array(colors);
+  // var colorArray = new Float32Array(colors);
+  var verticesLength = vertices.length;
+  var plainColorArray = vertices.slice();
+  plainColorArray.pop();
+  plainColorArray.pop();
+  plainColorArray.pop();
+  plainColorArray.pop();
+  plainColorArray.push(red);
+
+  // plainColorArray.set([1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0], verticesLength - 3);
+  var colorArray = new Float32Array(plainColorArray);
 
   gl.bufferData(gl.ARRAY_BUFFER, colorArray, gl.DYNAMIC_DRAW);
   gl.enableVertexAttribArray(colorLocation);
