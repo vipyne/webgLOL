@@ -38,7 +38,7 @@ function webglol() {
   gl.linkProgram(webglolProgram);
   gl.useProgram(webglolProgram);
 
-  // var triangleAttributePosition = gl.getAttribLocation(webglolProgram, 'pos');
+  var triangleAttributePosition = gl.getAttribLocation(webglolProgram, 'pos');
 
   // set the resolution
   var resolutionLocation = gl.getUniformLocation(webglolProgram, 'u_resolution');
@@ -111,8 +111,8 @@ function webglol() {
 
   gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
   gl.bufferData(gl.ARRAY_BUFFER, verticesFloatArray, gl.DYNAMIC_DRAW);
-  // gl.enableVertexAttribArray(triangleAttributePosition);
-  // gl.vertexAttribPointer(triangleAttributePosition, 3, gl.FLOAT, false, 0, 0);
+  gl.enableVertexAttribArray(triangleAttributePosition);
+  gl.vertexAttribPointer(triangleAttributePosition, 3, gl.FLOAT, false, 0, 0);
 
   ///// %%%%%
   var colorBuffer = gl.createBuffer();

@@ -9,7 +9,7 @@
 <script id="vertex-shader" type="x-shader/x-vertex">
 // attribute- input value that changes the vertices
 // vec3- 3D floating point vector
-// attribute vec3 pos;
+attribute vec3 pos;
 
 uniform mat4 u_model_m;
 uniform mat4 u_camera_m;
@@ -18,8 +18,9 @@ attribute vec4 aVertexColor;
 varying vec4 vertexColor;
 
 void main() {
+  gl_position = vec4(pos, 2.0);
   // gl_position = u_model_m * u_camera_m * vec4(pos, 2.0);
-  vertexColor = aVertexColor;
+  // vertexColor = aVertexColor;
 }
 </script>
 
@@ -31,7 +32,7 @@ uniform vec2 u_resolution;
 uniform float u_time;
 uniform int red_color;
 
-// yeah i don't exactly get `varying` yet
+// varying color gradient
 varying vec4 vertexColor;
 
 // Plot a line on Y using a value between 0.0-1.0
@@ -67,7 +68,8 @@ void main() {
   finalColor_v3 = fillInAllThePixels_v3 + mixedGreen;
 
   // gl_FragColor- 4D vector [ R, G, B, A ]
-  gl_FragColor = vec4(finalColor_v3, 1.0) + vertexColor;
+  gl_FragColor = vec4(finalColor_v3, 1.0);
+  // gl_FragColor = vec4(finalColor_v3, 1.0) + vertexColor;
 }
 </script>
 
