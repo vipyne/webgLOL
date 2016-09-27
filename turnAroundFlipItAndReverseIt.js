@@ -61,10 +61,9 @@ function webglol() {
     return this.angleCounter;
   });
 
-  var angle = 0.0;
-  // var angle = this.angleCounter;
+  var angle = this.angleCounter;
 
-  // rotation way 1;
+  // rotation way 1; (silly)
   var radian = Math.PI * angle / 180.0;
   var cosR = Math.cos(radian);
   var sinR = Math.sin(radian);
@@ -75,7 +74,7 @@ function webglol() {
   gl.uniform1f(u_cosLocation, cosR);
   gl.uniform1f(u_sinLocation, sinR);
 
-  // rotation way 2;
+  // rotation way 2; (usual)
   var cos = Math.cos(radian);
   var sin = Math.sin(radian);
   var matrixX = new Float32Array([ cos, sin, 0, 0, // X
@@ -104,10 +103,10 @@ function webglol() {
   var vertices = [];
 
   // center dot
-  vertices.push( -0.01, 0.01, 0.0,
+  vertices.push( -0.01,  0.01, 0.0,
                  -0.01, -0.01, 0.0,
-                  0.01, 0.01, 0.0,
-                  0.01, -0.01, 0.0);
+                  0.01,  0.01, 0.0,
+                  0.01, -0.01, 0.0); // actually a square
 
   // `L`s
   vertices.push( -0.5, 0.0, 0.0,
@@ -134,17 +133,15 @@ function webglol() {
 
   var verticesFloatArray = new Float32Array(vertices);
 
-  var vertexPosBuffer = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, vertexPosBuffer);
-  // gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+  gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
   gl.bufferData(gl.ARRAY_BUFFER, verticesFloatArray, gl.DYNAMIC_DRAW);
   gl.enableVertexAttribArray(triangleAttributePosition);
   gl.vertexAttribPointer(triangleAttributePosition, 3, gl.FLOAT, false, 0, 0);
 
   // drawArrays(primatitve shape, start index, number of values to be rendered)
   gl.drawArrays(gl.TRIANGLES, 4, 6); // draw the `L`s
-  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4); // draw the center dot
   gl.drawArrays(gl.TRIANGLE_FAN, 10, numberOfTriangles - 9); // draw the `O`
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4); // draw the center dot
 
   ///// %%%%%
   var colorBuffer = gl.createBuffer();
@@ -154,27 +151,20 @@ function webglol() {
                 1.0, 0.0, 0.0, 1.0,
                 1.0, 0.0, 0.0, 1.0];
 
-  // var colorArray = new Float32Array(colors);
   var verticesLength = vertices.length;
-  var plainColorArray = vertices.slice();
-  plainColorArray.pop();
-  plainColorArray.pop();
-  plainColorArray.pop();
-  plainColorArray.pop();
-  plainColorArray.push(red);
-
-  // plainColorArray.set([1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0], verticesLength - 3);
-  var colorArray = new Float32Array(plainColorArray);
+  var colorArray = new Float32Array(verticesLength);
+    colorArray.set([1.0, -1.0, -1.0,
+    1.0, -1.0, -1.0,
+    1.0, -1.0, -1.0,
+    1.0, -1.0, -1.0], 0);
 
   gl.bufferData(gl.ARRAY_BUFFER, colorArray, gl.DYNAMIC_DRAW);
   gl.enableVertexAttribArray(colorLocation);
   gl.vertexAttribPointer(colorLocation, 3, gl.FLOAT, false, 0, 0);
-  // colorBuffer.itemSize = 4;
-  // colorBuffer.numItems =3;
+  ///// %%%%%
 
   // ------------------------------
   requestAnimationFrame(webglol);
 }
 
 window.onload = webglol;
-// setInterval(webglol, 100);
