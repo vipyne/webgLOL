@@ -61,8 +61,10 @@ function webglol() {
     return this.angleCounter;
   });
 
-  // rotation
+  // var angle = 0.0;
   var angle = this.angleCounter;
+
+  // rotation way 1;
   var radian = Math.PI * angle / 180.0;
   var cosR = Math.cos(radian);
   var sinR = Math.sin(radian);
@@ -72,6 +74,31 @@ function webglol() {
 
   gl.uniform1f(u_cosLocation, cosR);
   gl.uniform1f(u_sinLocation, sinR);
+
+  // rotation way 2;
+  var cos = Math.cos(radian);
+  var sin = Math.sin(radian);
+  var matrixX = new Float32Array([ cos, sin, 0, 0, // X
+                                  -sin, cos, 0, 0,
+                                   0,   0,   1, 0,
+                                   0,   0,   0, 1]);
+  var matrixY = new Float32Array([ cos, sin, 0, 0, // Y
+                                  -sin, cos, 0, 0,
+                                   0,   0,   1, 0,
+                                   0,   0,   0, 1]);
+  var matrixZ = new Float32Array([ cos,-sin, 0, 0, // Z
+                                   sin, cos, 0, 0,
+                                   0,   0,   1, 0,
+                                   0,   0,   0, 1]);
+  var u_model_mLocation = gl.getUniformLocation(webglolProgram, 'u_model_m');
+  // gl.uniformMatrix4fv(uniformLocation, weather or not to transpose matrix to column first from row first, matrix array)
+  // second arg is always set to false-- this is to preserve arg order of same function in openGL
+  gl.uniformMatrix4fv(u_model_mLocation, false, matrixZ);
+
+  // ///// %%%%% red dot
+  // var colorLocation = gl.getAttribLocation(webglolProgram, 'aVertexColor');
+  // gl.enableVertexAttribArray(colorLocation);
+  // ///// %%%%%
 
   // vertices
   var vertices = [];
@@ -107,7 +134,8 @@ function webglol() {
 
   var verticesFloatArray = new Float32Array(vertices);
 
-  gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+  var vertexPosBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, vertexPosBuffer);
   gl.bufferData(gl.ARRAY_BUFFER, verticesFloatArray, gl.DYNAMIC_DRAW);
   gl.enableVertexAttribArray(triangleAttributePosition);
   gl.vertexAttribPointer(triangleAttributePosition, 3, gl.FLOAT, false, 0, 0);
@@ -117,6 +145,20 @@ function webglol() {
   gl.drawArrays(gl.TRIANGLE_STRIP, numberOfTriangles + 6, 4); // draw the center dot
   gl.drawArrays(gl.TRIANGLE_FAN, 0, numberOfTriangles - 9); // draw the `O`
 
+  ///// %%%%%
+  // var colorBuffer = gl.createBuffer();
+  // gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+  // var colors = [1.0, 0.0, 0.0, 1.0,
+  //               0.0, 0.0, 0.0, 1.0,
+  //               0.0, 0.0, 0.0, 1.0];
+
+  // var colorArray = new Float32Array(colors);
+
+  // gl.bufferData(gl.ARRAY_BUFFER, colorArray, gl.DYNAMIC_DRAW);
+  // colorBuffer.itemSize = 4;
+  // colorBuffer.numItems =3;
+
+  // ------------------------------
   requestAnimationFrame(webglol);
 }
 
