@@ -61,8 +61,8 @@ function webglol() {
     return this.angleCounter;
   });
 
-  // var angle = 0.0;
-  var angle = this.angleCounter;
+  var angle = 0.0;
+  // var angle = this.angleCounter;
 
   // rotation way 1;
   var radian = Math.PI * angle / 180.0;
@@ -103,20 +103,11 @@ function webglol() {
   // vertices
   var vertices = [];
 
-  // `O`
-  var numberOfTriangles = 100;
-  var degreesPerTriangle = (4 * Math.PI) / numberOfTriangles;
-  var centerX = 0.5;
-
-  for(var i = 0; i < numberOfTriangles; i++) {
-      var index = i * 3;
-      var angle = degreesPerTriangle * i;
-      var scale = 2;
-
-      vertices[index] = Math.cos(angle) / scale;               // x
-      vertices[index + 1] = Math.sin(angle) / scale + centerX; // y
-      vertices[index + 2] = 0;                                 // z
-  }
+  // center dot
+  vertices.push( -0.01, 0.01, 0.0,
+                 -0.01, -0.01, 0.0,
+                  0.01, 0.01, 0.0,
+                  0.01, -0.01, 0.0);
 
   // `L`s
   vertices.push( -0.5, 0.0, 0.0,
@@ -126,11 +117,20 @@ function webglol() {
                   0.5, 0.0, 0.0,
                   1.5, 0.0, 0.0 ); // second `L`
 
-  // center dot
-  vertices.push( -0.01, 0.01, 0.0,
-                 -0.01, -0.01, 0.0,
-                  0.01, 0.01, 0.0,
-                  0.01, -0.01, 0.0);
+  // `O`
+  var numberOfTriangles = 100;
+  var degreesPerTriangle = (4 * Math.PI) / numberOfTriangles;
+  var centerX = 0.5;
+
+  for(var i = 10; i < numberOfTriangles + 11; i++) {
+      var index = i * 3;
+      var angle = degreesPerTriangle * i;
+      var scale = 2;
+
+      vertices[index] = Math.cos(angle) / scale;               // x
+      vertices[index + 1] = Math.sin(angle) / scale + centerX; // y
+      vertices[index + 2] = 0;                                 // z
+  }
 
   var verticesFloatArray = new Float32Array(vertices);
 
@@ -142,9 +142,9 @@ function webglol() {
   gl.vertexAttribPointer(triangleAttributePosition, 3, gl.FLOAT, false, 0, 0);
 
   // drawArrays(primatitve shape, start index, number of values to be rendered)
-  gl.drawArrays(gl.TRIANGLES, numberOfTriangles, 6); // draw the `L`s
-  gl.drawArrays(gl.TRIANGLE_STRIP, numberOfTriangles + 6, 4); // draw the center dot
-  gl.drawArrays(gl.TRIANGLE_FAN, 0, numberOfTriangles - 9); // draw the `O`
+  gl.drawArrays(gl.TRIANGLES, 4, 6); // draw the `L`s
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4); // draw the center dot
+  gl.drawArrays(gl.TRIANGLE_FAN, 10, numberOfTriangles - 9); // draw the `O`
 
   ///// %%%%%
   var colorBuffer = gl.createBuffer();

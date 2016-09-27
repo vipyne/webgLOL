@@ -81,7 +81,8 @@ void main() {
   float plottedLine = plot(xyCoord_v2, line);
   float canvasFillScalar = 1.0 - plottedLine; // background gradient
   vec3 fillInAllThePixels_v3 = canvasFillScalar * finalColor_v3;
-  float sinWave =(sin(u_time * 10.0));
+  // float sinWave =(sin(u_time * 10.0));
+  float sinWave = 1.0;
 
   vec3 mixedGreen = plottedLine * mix(powerColor_v3, otherColor_v3, (line + sinWave)  );
 
