@@ -7,33 +7,18 @@
 <body>
 
 <script id="vertex-shader" type="x-shader/x-vertex">
-// attribute- input value that changes the vertices
-// vec3- 3D floating point vector
 attribute vec3 pos;
-
-uniform mat4 u_model_m;
-uniform mat4 u_camera_m;
-
-attribute vec4 aVertexColor;
-varying vec4 vertexColor;
 
 void main() {
   gl_position = vec4(pos, 2.0);
-  // gl_position = u_model_m * u_camera_m * vec4(pos, 2.0);
-  // vertexColor = aVertexColor;
 }
 </script>
 
 <script id="fragment-shader" type="x-shader/x-fragment">
-// precision- ... and why do we need this?
-precision mediump float;  //
-// uniform- ...
+precision mediump float;
 uniform vec2 u_resolution;
 uniform float u_time;
-uniform int red_color;
 
-// varying color gradient
-varying vec4 vertexColor;
 
 // Plot a line on Y using a value between 0.0-1.0
 float plot(vec2 st, float plottedLine){
@@ -45,14 +30,12 @@ float plot(vec2 st, float plottedLine){
 }
 
 void main() {
-  // gl_FragCoord- ...
   vec2 xyCoord_v2;
   xyCoord_v2.x = gl_FragCoord.x/u_resolution[0];
   xyCoord_v2.y = gl_FragCoord.y/u_resolution[1];
 
   float line = xyCoord_v2.x;
 
-  // vec3 finalColor_v3;
   vec3 finalColor_v3 = vec3(0.66, 0.66, 0.66);
   vec3 powerColor_v3 = vec3(0.0, 0.66, 0.66);
   vec3 otherColor_v3 = vec3(0.33, 0.66, 0.22);
@@ -67,13 +50,11 @@ void main() {
 
   finalColor_v3 = fillInAllThePixels_v3 + mixedGreen;
 
-  // gl_FragColor- 4D vector [ R, G, B, A ]
   gl_FragColor = vec4(finalColor_v3, 1.0);
-  // gl_FragColor = vec4(finalColor_v3, 1.0) + vertexColor;
 }
 </script>
 
-<script src="boxingDay.js" type="text/javascript"></script>
+<script src="webglolprogram.js" type="text/javascript"></script>
 
 <canvas id="webglol" width="600" height="600"></canvas>
 </body>
