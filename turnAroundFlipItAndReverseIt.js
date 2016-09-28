@@ -95,13 +95,7 @@ function webglol() {
   // gl.uniformMatrix4fv(uniformLocation, weather or not to transpose matrix to column first from row first, matrix array)
   // second arg is always set to false-- this is to preserve arg order of same function in openGL
   gl.uniformMatrix4fv(u_model_mLocation, false, new Float32Array(matrixX));
-
   gl.uniformMatrix4fv(u_camera_mLocation, false, new Float32Array(matrixY));
-
-  ///// %%%%% red dot
-  var colorLocation = gl.getAttribLocation(webglolProgram, 'aVertexColor');
-  gl.enableVertexAttribArray(colorLocation);
-  ///// %%%%%
 
   // vertices
   var vertices = [];
@@ -142,30 +136,29 @@ function webglol() {
   gl.enableVertexAttribArray(triangleAttributePosition);
   gl.vertexAttribPointer(triangleAttributePosition, 3, gl.FLOAT, false, 0, 0);
 
-  // drawArrays(primatitve shape, start index, number of values to be rendered)
-  gl.drawArrays(gl.TRIANGLES, 4, 6); // draw the `L`s
-  gl.drawArrays(gl.TRIANGLE_FAN, 10, numberOfTriangles - 9); // draw the `O`
-  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4); // draw the center dot
+  ///// %%%%% red dot
+  var colorLocation = gl.getAttribLocation(webglolProgram, 'aVertexColor');
+  gl.enableVertexAttribArray(colorLocation);
 
-  ///// %%%%%
   var colorBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-  var red    = [1.0, 0.0, 0.0, 1.0,
-                1.0, 0.0, 0.0, 1.0,
-                1.0, 0.0, 0.0, 1.0,
-                1.0, 0.0, 0.0, 1.0];
 
   var verticesLength = vertices.length;
   var colorArray = new Float32Array(verticesLength);
-    colorArray.set([1.0, -1.0, -1.0,
-    1.0, -1.0, -1.0,
-    1.0, -1.0, -1.0,
-    1.0, -1.0, -1.0], 0);
+  colorArray.set([1.0, -1.0, -1.0,
+                  1.0, -1.0, -1.0,
+                  1.0, -1.0, -1.0,
+                  1.0, -1.0, -1.0], 0);
 
   gl.bufferData(gl.ARRAY_BUFFER, colorArray, gl.DYNAMIC_DRAW);
   gl.enableVertexAttribArray(colorLocation);
   gl.vertexAttribPointer(colorLocation, 3, gl.FLOAT, false, 0, 0);
   ///// %%%%%
+
+  // drawArrays(primatitve shape, start index, number of values to be rendered)
+  gl.drawArrays(gl.TRIANGLES, 4, 6); // draw the `L`s
+  gl.drawArrays(gl.TRIANGLE_FAN, 10, numberOfTriangles - 9); // draw the `O`
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4); // draw the center dot
 
   // ------------------------------
   requestAnimationFrame(webglol);
