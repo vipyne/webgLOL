@@ -138,10 +138,7 @@ function webglol() {
 
   ///// %%%%% red dot
   var colorLocation = gl.getAttribLocation(webglolProgram, 'aVertexColor');
-  gl.enableVertexAttribArray(colorLocation);
-
-  var colorBuffer = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+  gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
 
   var verticesLength = vertices.length;
   var colorArray = new Float32Array(verticesLength);
