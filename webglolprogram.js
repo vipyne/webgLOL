@@ -61,23 +61,23 @@ function webglol() {
     return this.angleCounter;
   });
 
-  // rotation
-  var angle = this.angleCounter;
-  var radian = Math.PI * angle / 180.0;
-  var cos = Math.cos(radian);
-  var sin = Math.sin(radian);
-  var matrixX = [1,   0,   0, 0, // X
-                 0, cos,-sin, 0,
-                 0, sin, cos, 0,
-                 0,   0,   0, 1];
-  var matrixY = [cos, 0, sin, 0, // Y
-                 0,   1,   0, 0,
-                -sin, 0, cos, 0,
-                 0,   0,   0, 1];
-  var matrixZ = [cos,-sin, 0, 0, // Z
-                 sin, cos, 0, 0,
-                 0,   0,   1, 0,
-                 0,   0,   0, 1];
+  // // rotation
+  // var angle = this.angleCounter;
+  // var radian = Math.PI * angle / 180.0;
+  // var cos = Math.cos(radian);
+  // var sin = Math.sin(radian);
+  // var matrixX = [1,   0,   0, 0, // X
+  //                0, cos,-sin, 0,
+  //                0, sin, cos, 0,
+  //                0,   0,   0, 1];
+  // var matrixY = [cos, 0, sin, 0, // Y
+  //                0,   1,   0, 0,
+  //               -sin, 0, cos, 0,
+  //                0,   0,   0, 1];
+  // var matrixZ = [cos,-sin, 0, 0, // Z
+  //                sin, cos, 0, 0,
+  //                0,   0,   1, 0,
+  //                0,   0,   0, 1];
 
   // vertices
   var vertices = [];
@@ -85,7 +85,7 @@ function webglol() {
   // center dot
   vertices.push( -0.01,  0.01, 0.0,
                  -0.01, -0.01, 0.0,
-                  0.9,  0.9, 0.0,
+                  0.01,  0.01, 0.0,
                   0.01, -0.01, 0.0); // actually a square
 
   // // box
@@ -119,7 +119,8 @@ function webglol() {
 
   // drawArrays(primatitve shape, start index, number of values to be rendered)
   // gl.drawArrays(gl.TRIANGLES, 4, 8); // draw the box
-  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4); // draw the center dot
+  // gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4); // draw the center dot
+  gl.drawArrays(gl.TRIANGLES, 0, 4); // draw the center dot
 
   // ------------------------------
   requestAnimationFrame(webglol);

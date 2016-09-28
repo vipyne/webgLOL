@@ -30,27 +30,28 @@ float plot(vec2 st, float plottedLine){
 }
 
 void main() {
-  vec2 xyCoord_v2;
-  xyCoord_v2.x = gl_FragCoord.x/u_resolution[0];
-  xyCoord_v2.y = gl_FragCoord.y/u_resolution[1];
+  // vec2 xyCoord_v2;
+  // xyCoord_v2.x = gl_FragCoord.x/u_resolution[0];
+  // xyCoord_v2.y = gl_FragCoord.y/u_resolution[1];
 
-  float line = xyCoord_v2.x;
+  // float line = xyCoord_v2.x;
 
-  vec3 finalColor_v3 = vec3(0.66, 0.66, 0.66);
-  vec3 powerColor_v3 = vec3(0.0, 0.66, 0.66);
-  vec3 otherColor_v3 = vec3(0.33, 0.66, 0.22);
+  // vec3 finalColor_v3 = vec3(0.66, 0.66, 0.66);
+  // vec3 powerColor_v3 = vec3(0.0, 0.66, 0.66);
+  // vec3 otherColor_v3 = vec3(0.33, 0.66, 0.22);
 
-  // Plot a line
-  float plottedLine = plot(xyCoord_v2, line);
-  float canvasFillScalar = 1.0 - plottedLine; // background gradient
-  vec3 fillInAllThePixels_v3 = canvasFillScalar * finalColor_v3;
-  float sinWave =(sin(u_time * 10.0));
+  // // Plot a line
+  // float plottedLine = plot(xyCoord_v2, line);
+  // float canvasFillScalar = 1.0 - plottedLine; // background gradient
+  // vec3 fillInAllThePixels_v3 = canvasFillScalar * finalColor_v3;
+  // float sinWave =(sin(u_time * 10.0));
 
-  vec3 mixedGreen = plottedLine * mix(powerColor_v3, otherColor_v3, (line + sinWave)  );
+  // vec3 mixedGreen = plottedLine * mix(powerColor_v3, otherColor_v3, (line + sinWave)  );
 
-  finalColor_v3 = fillInAllThePixels_v3 + mixedGreen;
+  // finalColor_v3 = fillInAllThePixels_v3 + mixedGreen;
 
-  gl_FragColor = vec4(finalColor_v3, 1.0);
+  // gl_FragColor = vec4(finalColor_v3, 1.0);
+  gl_FragColor = vec4(1.0, 0.5, 0.25, 1.0);
 }
 </script>
 
