@@ -17,7 +17,7 @@ attribute vec4 attributeVertexColor;
 varying vec4 vColor;
 
 void main() {
-  gl_Position = third * world * camera * vec4(pos, 1.5);
+  gl_Position = third * world * camera * vec4(pos, 1.0);
   // gl_Position = world * camera * vec4(pos, 1.0);
   vColor = attributeVertexColor;
 }
@@ -37,7 +37,7 @@ void main() {
 
   vec3 finalColor_v3 = vec3(0.26, 0.86, 0.66);
 
-  gl_FragColor = vec4(finalColor_v3, 1.0) + vColor;
+  gl_FragColor = vec4(finalColor_v3, 1.0) + vColor/vec4(2.0);
 }
 </script>
 

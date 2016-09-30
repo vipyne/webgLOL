@@ -88,63 +88,124 @@ function locateShaderAttributes() {
   gl.uniform2f(shadersPointerToResolutionValues, webglolCanvas.width, webglolCanvas.height);
 }
 
-function createVertices() {
-  var vertices = [];
-
-  vertices.push( -0.01,  0.01, 0.0,
-                 -0.01, -0.01, 0.0,
-                  0.01,  0.01, 0.0,
-                  0.01, -0.01, 0.0); // center DOT - actually a little square
-
+function generateBoxVertices(vertices) {
   // T H E   B O X
-  vertices.push( -0.5, 0.5, 0.5,
+  vertices.push(
+                 -0.5, 0.5, 0.5, // BACK
                  -0.5, -0.5, 0.5,
-                 0.5, -0.5, 0.5, // triangle 1
-                 -0.5, 0.5, 0.5,
-                 0.5, -0.5, 0.5,
+                 // 0.5, -0.5, 0.5, // triangle 1
+                 // -0.5, 0.5, 0.5,
+                 0.5, 0.5, 0.5,
+                 0.5, -0.5, 0.5
+                 ); // triangle 2
+
+  vertices.push( -0.5, 0.5, 0.5,
+                 -0.5, 0.5, -0.5,
+                 // 0.5, 0.5, -0.5, // triangle 1
+                 // -0.5, 0.5, 0.5,
+                 0.5, 0.5, -0.5,
                  0.5, 0.5, 0.5); // triangle 2
 
-  vertices.push( -0.5, 0.5, -0.5,
+  vertices.push( -0.5, 0.5, -0.5, // FRONT
                  -0.5, -0.5, -0.5,
-                 0.5, -0.5, -0.5, // triangle 1
-                 -0.5, 0.5, -0.5,
+                 // 0.5, -0.5, -0.5, // triangle 1
+                 // -0.5, 0.5, -0.5,
                  0.5, -0.5, -0.5,
                  0.5, 0.5, -0.5); // triangle 2
 
-  vertices.push( -0.5, 0.5, 0.5,
-                 -0.5, 0.5, -0.5,
-                 0.5, 0.5, -0.5, // triangle 1
-                 -0.5, 0.5, 0.5,
-                 0.5, 0.5, -0.5,
-                 0.5, 0.5, 0.5); // triangle 2
-
   vertices.push( -0.5, -0.5, 0.5,
                  -0.5, -0.5, -0.5,
-                 0.5, -0.5, -0.5, // triangle 1
-                 -0.5, -0.5, 0.5,
+                 // 0.5, -0.5, -0.5, // triangle 1
+                 // -0.5, -0.5, 0.5,
                  0.5, -0.5, -0.5,
                  0.5, -0.5, 0.5); // triangle 2
 
-  vertices.push( 0.5, 0.5, -0.5,
+  vertices.push( 0.5, 0.5, -0.5, // RIGHT
                  0.5, -0.5, -0.5,
-                 0.5, -0.5, 0.5, // triangle 1
-                 0.5, 0.5, -0.5,
+                 // 0.5, -0.5, 0.5, // triangle 1
+                 // 0.5, 0.5, -0.5,
                  0.5, -0.5, 0.5,
                  0.5, 0.5, 0.5); // triangle 2
 
-  vertices.push( -0.5, 0.5, -0.5,
+  vertices.push( -0.5, 0.5, -0.5, // LEFT
                  -0.5, -0.5, -0.5,
-                 -0.5, -0.5, 0.5, // triangle 1
-                 -0.5, 0.5, -0.5,
+                 // -0.5, -0.5, 0.5, // triangle 1
+                 // -0.5, 0.5, -0.5,
                  -0.5, -0.5, 0.5,
                  -0.5, 0.5, 0.5); // triangle 2
+}
+
+function generateColorVertValues(colorArray) {
+  colorArray.set([0.30, -0.3, -0.3,     // BACK
+                  0.30, -0.3, -0.3,
+                  // 0.30, -0.3, -0.3,
+                  // 0.30, -0.3, -0.3,
+                  0.30, -0.3, -0.3,
+                  0.30, -0.3, -0.3], 0);
+                  // 0.30, -0.3, -0.3], 12);
+
+  colorArray.set([1.0, 0.3, 0.3,     // FRONT
+                  1.0, 0.3, 0.3,
+                  // -1.0, 0.3, 0.3,
+                  // -1.0, 0.3, 0.3,
+                  -1.0, 0.3, 0.3,
+                  -1.0, 0.3, 0.3], 4);
+                  // -1.0, 0.3, 0.3], 18);
+                  // -1.0, 0.3, 0.3], 30);
+
+  colorArray.set([-1.0, 0.5, 0.5,     // TOP ..
+                  -1.0, 0.5, 0.5,
+                  // -1.0, 0.5, 0.5,
+                  // -1.0, 0.5, 0.5,
+                  -1.0, 0.5, 0.5,
+                  -1.0, 0.5, 0.5], 8);
+                  // -1.0, 0.5, 0.5], 34);
+                  // -1.0, 0.5, 0.5], 48);
+
+  colorArray.set([-1.0, -0.1, -0.1,     // BOTTOM
+                  -1.0, -0.1, -0.1,
+                  // -1.0, -0.1, -0.1,
+                  // -1.0, -0.1, -0.1,
+                  -1.0, -0.1, -0.1,
+                  -1.0, -0.1, -0.1], 12);
+                  // -1.0, -0.1, -0.1], 52);
+                  // -1.0, -0.1, -0.1], 66);
+
+  colorArray.set([-1.0, -0.24, -0.24,     // RIGHt
+                  -1.0, -0.24, -0.24,
+                  // -1.0, -0.24, -0.24,
+                  // -1.0, -0.24, -0.24,
+                  -1.0, -0.24, -0.24,
+                  -1.0, -0.24, -0.24], 16);
+                  // -1.0, -0.24, -0.24], 70);
+                  // -1.0, -0.24, -0.24], 84);
+
+  colorArray.set([-1.0, -0.66, -0.66,     // LEFt
+                  -1.0, -0.66, -0.66,
+                  // -1.0, -0.66, -0.66,
+                  // -1.0, -0.66, -0.66,
+                  -1.0, -0.66, -0.66,
+                  -1.0, -0.66, -0.66], 20);
+                  // -1.0, -0.66, -0.66], 88);
+                  // -1.0, -0.66, -0.66], 102);
+}
+
+function createVertices() {
+  var vertices = [];
+
+  // vertices.push( -0.01,  0.01, 0.0,
+  //                -0.01, -0.01, 0.0,
+  //                 0.01,  0.01, 0.0,
+  //                 0.01, -0.01, 0.0); // center DOT - actually a little square
+
+  generateBoxVertices(vertices);
 
   verticesFloatArray = new Float32Array(vertices);
 
   // app ------> card
   vBuffersPointerToAspaceOnTheCard = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, vBuffersPointerToAspaceOnTheCard); // called multiple times
-  vBuffersPointerToAspaceOnTheCard.itemSize = 4; // 3 values per vertex (x, y, z)
+  vBuffersPointerToAspaceOnTheCard.itemSize = 3; // 3 values per vertex (x, y, z)
   vBuffersPointerToAspaceOnTheCard.numSize = 12; // 12 vertices
 
   // app ------> card
@@ -154,57 +215,17 @@ function createVertices() {
 
   // C O L O R   B U F F E R
   shadersPointerToColorValues = gl.getAttribLocation(webglolProgram, 'attributeVertexColor');
-  shadersPointerToColorValues = gl.getAttribLocation(webglolProgram, 'attributeVertexColor');
   gl.enableVertexAttribArray(shadersPointerToColorValues);
 
   var verticesLength = vertices.length;
   colorArray = new Float32Array(verticesLength);
-  colorArray.set([1.0, -1.0, -1.0,     // set red dot color
-                  1.0, -1.0, -1.0,
-                  1.0, -1.0, -1.0,
-                  1.0, -1.0, -1.0], 0);
 
-  colorArray.set([0.30, -0.3, -0.3,     // front
-                  0.30, -0.3, -0.3,
-                  0.30, -0.3, -0.3,
-                  0.30, -0.3, -0.3,
-                  0.30, -0.3, -0.3,
-                  0.30, -0.3, -0.3], 12);
+  // colorArray.set([1.0, -1.0, -1.0,     // set red dot color
+  //                 1.0, -1.0, -1.0,
+  //                 1.0, -1.0, -1.0,
+  //                 1.0, -1.0, -1.0], 0);
+  generateColorVertValues(colorArray);
 
-  colorArray.set([-1.0, 0.3, 0.3,     // back
-                  -1.0, 0.3, 0.3,
-                  -1.0, 0.3, 0.3,
-                  -1.0, 0.3, 0.3,
-                  -1.0, 0.3, 0.3,
-                  -1.0, 0.3, 0.3], 30);
-
-  colorArray.set([-1.0, 0.5, 0.5,     // front
-                  -1.0, 0.5, 0.5,
-                  -1.0, 0.5, 0.5,
-                  -1.0, 0.5, 0.5,
-                  -1.0, 0.5, 0.5,
-                  -1.0, 0.5, 0.5], 48);
-
-  colorArray.set([-1.0, -0.1, -0.1,     // front
-                  -1.0, -0.1, -0.1,
-                  -1.0, -0.1, -0.1,
-                  -1.0, -0.1, -0.1,
-                  -1.0, -0.1, -0.1,
-                  -1.0, -0.1, -0.1], 66);
-
-  colorArray.set([-1.0, -0.24, -0.24,     // front
-                  -1.0, -0.24, -0.24,
-                  -1.0, -0.24, -0.24,
-                  -1.0, -0.24, -0.24,
-                  -1.0, -0.24, -0.24,
-                  -1.0, -0.24, -0.24], 84);
-
-  colorArray.set([-1.0, -0.66, -0.66,     // front
-                  -1.0, -0.66, -0.66,
-                  -1.0, -0.66, -0.66,
-                  -1.0, -0.66, -0.66,
-                  -1.0, -0.66, -0.66,
-                  -1.0, -0.66, -0.66], 102);
 
   // app ------> card
   colorBuffersPointerToAspaceOnTheCard = gl.createBuffer();
@@ -218,8 +239,10 @@ function createVertices() {
 
 // / / / / - - - -   D R A W   - - - - \ \ \ \ \\
 function draw() {
-  angleCounter++;
-  // angleCounter = 45
+  gl.viewport(0, 0, webglolCanvas.width, webglolCanvas.height);
+
+  // angleCounter++;
+  angleCounter = 25
   util.rotate();
 
   gl.clearColor(0.0, 0, 0, .2);
@@ -253,10 +276,27 @@ function draw() {
   gl.vertexAttribPointer(shadersPointerToThirdMatrix, 3, gl.FLOAT, false, 0, 0);
   // -------------
 
+
   ///// DRAWRINGZ /////
   // drawArrays(primatitve shape, start index, number of values to be rendered)
-  gl.drawArrays(gl.TRIANGLES, 4, 36);
-  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4); // draw the center DOT
+  // gl.drawArrays(gl.LINES, 0, 12);
+  // gl.drawElements(gl.TRIANGLES, 0, 36, gl.USIGNED_SHORT, 0);
+  // gl.drawArrays(gl.TRIANGLES, 0, 24);
+  // gl.drawArrays(gl.TRIANGLES, 4, 36);
+  // gl.drawArrays(gl.POINTS, 0, );
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 8);
+  // gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4); // draw the center DOT
+  var index_buffer = gl.createBuffer ();
+         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, index_buffer);
+  var indices = [0,1,2, 0,2,3,
+                  4,5,6, 4,6,7,
+            8,9,10, 8,10,11,
+            12,13,14, 12,14,15,
+            16,17,18, 16,18,19,
+            20,21,22, 20,22,23]
+         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
+  gl.enableVertexAttribArray(shadersPointerToColorValues);
+  gl.vertexAttribPointer(shadersPointerToColorValues, 3, gl.FLOAT, false, 0, 0);
 // debugger
   requestAnimationFrame(draw);
 }
