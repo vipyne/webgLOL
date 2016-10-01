@@ -11,6 +11,8 @@ var vBuffersPointerToAspaceOnTheCard;
 var colorBuffersPointerToAspaceOnTheCard;
 var matrix;
 var angleCounter = 0;
+var devAngle = 0;
+var devNum = 4;
 
 function init() {
   webglolInit();
@@ -89,105 +91,61 @@ function locateShaderAttributes() {
 }
 
 function generateBoxVertices(vertices) {
+  devNum = 12
+  devAngle = 15
   // T H E   B O X
-  vertices.push(
-                 -0.5, 0.5, 0.5, // BACK
-                 -0.5, -0.5, 0.5,
-                 // 0.5, -0.5, 0.5, // triangle 1
-                 // -0.5, 0.5, 0.5,
-                 0.5, 0.5, 0.5,
-                 0.5, -0.5, 0.5
-                 ); // triangle 2
+vertices = [
+  // Front face
+  -1.0, -1.0,  1.0,
+   1.0, -1.0,  1.0,
+   1.0,  1.0,  1.0,
+  -1.0,  1.0,  1.0,
 
-  vertices.push( -0.5, 0.5, 0.5,
-                 -0.5, 0.5, -0.5,
-                 // 0.5, 0.5, -0.5, // triangle 1
-                 // -0.5, 0.5, 0.5,
-                 0.5, 0.5, -0.5,
-                 0.5, 0.5, 0.5); // triangle 2
+  // Back face
+  -1.0, -1.0, -1.0,
+  -1.0,  1.0, -1.0,
+   1.0,  1.0, -1.0,
+   1.0, -1.0, -1.0,
 
-  vertices.push( -0.5, 0.5, -0.5, // FRONT
-                 -0.5, -0.5, -0.5,
-                 // 0.5, -0.5, -0.5, // triangle 1
-                 // -0.5, 0.5, -0.5,
-                 0.5, -0.5, -0.5,
-                 0.5, 0.5, -0.5); // triangle 2
+  // Top face
+  -1.0,  1.0, -1.0,
+  -1.0,  1.0,  1.0,
+   1.0,  1.0,  1.0,
+   1.0,  1.0, -1.0,
 
-  vertices.push( -0.5, -0.5, 0.5,
-                 -0.5, -0.5, -0.5,
-                 // 0.5, -0.5, -0.5, // triangle 1
-                 // -0.5, -0.5, 0.5,
-                 0.5, -0.5, -0.5,
-                 0.5, -0.5, 0.5); // triangle 2
+  // Bottom face
+  -1.0, -1.0, -1.0,
+   1.0, -1.0, -1.0,
+   1.0, -1.0,  1.0,
+  -1.0, -1.0,  1.0,
 
-  vertices.push( 0.5, 0.5, -0.5, // RIGHT
-                 0.5, -0.5, -0.5,
-                 // 0.5, -0.5, 0.5, // triangle 1
-                 // 0.5, 0.5, -0.5,
-                 0.5, -0.5, 0.5,
-                 0.5, 0.5, 0.5); // triangle 2
+  // Right face
+   1.0, -1.0, -1.0,
+   1.0,  1.0, -1.0,
+   1.0,  1.0,  1.0,
+   1.0, -1.0,  1.0,
 
-  vertices.push( -0.5, 0.5, -0.5, // LEFT
-                 -0.5, -0.5, -0.5,
-                 // -0.5, -0.5, 0.5, // triangle 1
-                 // -0.5, 0.5, -0.5,
-                 -0.5, -0.5, 0.5,
-                 -0.5, 0.5, 0.5); // triangle 2
+  // Left face
+  -1.0, -1.0, -1.0,
+  -1.0, -1.0,  1.0,
+  -1.0,  1.0,  1.0,
+  -1.0,  1.0, -1.0
+];
+
+console.log('vertices.length', vertices.length)
+
 }
 
-function generateColorVertValues(colorArray) {
-  colorArray.set([0.30, -0.3, -0.3,     // BACK
-                  0.30, -0.3, -0.3,
-                  // 0.30, -0.3, -0.3,
-                  // 0.30, -0.3, -0.3,
-                  0.30, -0.3, -0.3,
-                  0.30, -0.3, -0.3], 0);
-                  // 0.30, -0.3, -0.3], 12);
+function generateColorVertValues() {
+  var derp = [];
 
-  colorArray.set([1.0, 0.3, 0.3,     // FRONT
-                  1.0, 0.3, 0.3,
-                  // -1.0, 0.3, 0.3,
-                  // -1.0, 0.3, 0.3,
-                  -1.0, 0.3, 0.3,
-                  -1.0, 0.3, 0.3], 4);
-                  // -1.0, 0.3, 0.3], 18);
-                  // -1.0, 0.3, 0.3], 30);
-
-  colorArray.set([-1.0, 0.5, 0.5,     // TOP ..
-                  -1.0, 0.5, 0.5,
-                  // -1.0, 0.5, 0.5,
-                  // -1.0, 0.5, 0.5,
-                  -1.0, 0.5, 0.5,
-                  -1.0, 0.5, 0.5], 8);
-                  // -1.0, 0.5, 0.5], 34);
-                  // -1.0, 0.5, 0.5], 48);
-
-  colorArray.set([-1.0, -0.1, -0.1,     // BOTTOM
-                  -1.0, -0.1, -0.1,
-                  // -1.0, -0.1, -0.1,
-                  // -1.0, -0.1, -0.1,
-                  -1.0, -0.1, -0.1,
-                  -1.0, -0.1, -0.1], 12);
-                  // -1.0, -0.1, -0.1], 52);
-                  // -1.0, -0.1, -0.1], 66);
-
-  colorArray.set([-1.0, -0.24, -0.24,     // RIGHt
-                  -1.0, -0.24, -0.24,
-                  // -1.0, -0.24, -0.24,
-                  // -1.0, -0.24, -0.24,
-                  -1.0, -0.24, -0.24,
-                  -1.0, -0.24, -0.24], 16);
-                  // -1.0, -0.24, -0.24], 70);
-                  // -1.0, -0.24, -0.24], 84);
-
-  colorArray.set([-1.0, -0.66, -0.66,     // LEFt
-                  -1.0, -0.66, -0.66,
-                  // -1.0, -0.66, -0.66,
-                  // -1.0, -0.66, -0.66,
-                  -1.0, -0.66, -0.66,
-                  -1.0, -0.66, -0.66], 20);
-                  // -1.0, -0.66, -0.66], 88);
-                  // -1.0, -0.66, -0.66], 102);
+  for (var i = 0; i < (24/3); i ++) {
+    derp.push(1.0);
+    derp.push(0.50);
+    derp.push(-0.5);
+  }
+  console.log('colorArray', colorArray.length)
+  colorArray.set(derp, 0)
 }
 
 function createVertices() {
@@ -219,7 +177,15 @@ function createVertices() {
 
   var verticesLength = vertices.length;
   colorArray = new Float32Array(verticesLength);
+var derp = [];
 
+  for (var i = 0; i < (24/3); i ++) {
+    derp.push(1.0);
+    derp.push(0.50);
+    derp.push(-0.5);
+  }
+  console.log('colorArray', colorArray.length)
+  colorArray.set(derp, 0)
   // colorArray.set([1.0, -1.0, -1.0,     // set red dot color
   //                 1.0, -1.0, -1.0,
   //                 1.0, -1.0, -1.0,
@@ -241,8 +207,9 @@ function createVertices() {
 function draw() {
   gl.viewport(0, 0, webglolCanvas.width, webglolCanvas.height);
 
-  // angleCounter++;
-  angleCounter = 25
+  angleCounter++;
+  // angleCounter = devAngle
+  // angleCounter = 25
   util.rotate();
 
   gl.clearColor(0.0, 0, 0, .2);
@@ -284,19 +251,24 @@ function draw() {
   // gl.drawArrays(gl.TRIANGLES, 0, 24);
   // gl.drawArrays(gl.TRIANGLES, 4, 36);
   // gl.drawArrays(gl.POINTS, 0, );
-  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 8);
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, devNum);
   // gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4); // draw the center DOT
-  var index_buffer = gl.createBuffer ();
-         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, index_buffer);
-  var indices = [0,1,2, 0,2,3,
-                  4,5,6, 4,6,7,
-            8,9,10, 8,10,11,
-            12,13,14, 12,14,15,
-            16,17,18, 16,18,19,
-            20,21,22, 20,22,23]
-         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
-  gl.enableVertexAttribArray(shadersPointerToColorValues);
-  gl.vertexAttribPointer(shadersPointerToColorValues, 3, gl.FLOAT, false, 0, 0);
+
+
+  // var index_buffer = gl.createBuffer ();
+  //        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, index_buffer);
+  // var indices = [0,1,2, 0,2,3,
+  //                 4,5,6, 4,6,7,
+  //           8,9,10, 8,10,11,
+  //           12,13,14, 12,14,15,
+  //           16,17,18, 16,18,19,
+  //           20,21,22, 20,22,23]
+  //        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
+  // gl.enableVertexAttribArray(shadersPointerToColorValues);
+  // gl.vertexAttribPointer(shadersPointerToColorValues, 3, gl.FLOAT, false, 0, 0);
+
+
+
 // debugger
   requestAnimationFrame(draw);
 }

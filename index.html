@@ -37,7 +37,8 @@ void main() {
 
   vec3 finalColor_v3 = vec3(0.26, 0.86, 0.66);
 
-  gl_FragColor = vec4(finalColor_v3, 1.0) + vColor/vec4(2.0);
+  gl_FragColor = vColor;
+  // gl_FragColor = vec4(finalColor_v3, 1.0) + vColor/vec4(2.0);
 }
 </script>
 
