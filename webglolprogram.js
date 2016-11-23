@@ -11,8 +11,6 @@ var vBuffersPointerToAspaceOnTheCard;
 var colorBuffersPointerToAspaceOnTheCard;
 var matrix;
 var angleCounter = 0;
-var devAngle = 0;
-var devNum = 4;
 
 function init() {
   webglolInit();
@@ -90,80 +88,63 @@ function locateShaderAttributes() {
   gl.uniform2f(shadersPointerToResolutionValues, webglolCanvas.width, webglolCanvas.height);
 }
 
-function generateBoxVertices(vertices) {
-  devNum = 12
-  devAngle = 15
-  // T H E   B O X
-vertices = [
-  // Front face
-  -1.0, -1.0,  1.0,
-   1.0, -1.0,  1.0,
-   1.0,  1.0,  1.0,
-  -1.0,  1.0,  1.0,
-
-  // Back face
-  -1.0, -1.0, -1.0,
-  -1.0,  1.0, -1.0,
-   1.0,  1.0, -1.0,
-   1.0, -1.0, -1.0,
-
-  // Top face
-  -1.0,  1.0, -1.0,
-  -1.0,  1.0,  1.0,
-   1.0,  1.0,  1.0,
-   1.0,  1.0, -1.0,
-
-  // Bottom face
-  -1.0, -1.0, -1.0,
-   1.0, -1.0, -1.0,
-   1.0, -1.0,  1.0,
-  -1.0, -1.0,  1.0,
-
-  // Right face
-   1.0, -1.0, -1.0,
-   1.0,  1.0, -1.0,
-   1.0,  1.0,  1.0,
-   1.0, -1.0,  1.0,
-
-  // Left face
-  -1.0, -1.0, -1.0,
-  -1.0, -1.0,  1.0,
-  -1.0,  1.0,  1.0,
-  -1.0,  1.0, -1.0
-];
-
-console.log('vertices.length', vertices.length)
-
-}
-
-function generateColorVertValues() {
-  var derp = [];
-
-  for (var i = 0; i < (24/3); i ++) {
-    derp.push(1.0);
-    derp.push(0.50);
-    derp.push(-0.5);
-  }
-  console.log('colorArray', colorArray.length)
-  colorArray.set(derp, 0)
-}
-
 function createVertices() {
   var vertices = [];
 
-  // vertices.push( -0.01,  0.01, 0.0,
-  //                -0.01, -0.01, 0.0,
-  //                 0.01,  0.01, 0.0,
-  //                 0.01, -0.01, 0.0); // center DOT - actually a little square
+  vertices.push( -0.01,  0.01, 0.0,
+                 -0.01, -0.01, 0.0,
+                  0.01,  0.01, 0.0,
+                  0.01, -0.01, 0.0); // center DOT - actually a little square
 
-  generateBoxVertices(vertices);
+  // T H E   B O X
+  vertices.push( -0.5, 0.5, 0.5,
+                 -0.5, -0.5, 0.5,
+                 0.5, -0.5, 0.5, // triangle 1
+                 -0.5, 0.5, 0.5,
+                 0.5, -0.5, 0.5,
+                 0.5, 0.5, 0.5); // triangle 2
+
+  vertices.push( -0.5, 0.5, -0.5,
+                 -0.5, -0.5, -0.5,
+                 0.5, -0.5, -0.5, // triangle 1
+                 -0.5, 0.5, -0.5,
+                 0.5, -0.5, -0.5,
+                 0.5, 0.5, -0.5); // triangle 2
+
+  vertices.push( -0.5, 0.5, 0.5,
+                 -0.5, 0.5, -0.5,
+                 0.5, 0.5, -0.5, // triangle 1
+                 -0.5, 0.5, 0.5,
+                 0.5, 0.5, -0.5,
+                 0.5, 0.5, 0.5); // triangle 2
+
+  vertices.push( -0.5, -0.5, 0.5,
+                 -0.5, -0.5, -0.5,
+                 0.5, -0.5, -0.5, // triangle 1
+                 -0.5, -0.5, 0.5,
+                 0.5, -0.5, -0.5,
+                 0.5, -0.5, 0.5); // triangle 2
+
+  vertices.push( 0.5, 0.5, -0.5,
+                 0.5, -0.5, -0.5,
+                 0.5, -0.5, 0.5, // triangle 1
+                 0.5, 0.5, -0.5,
+                 0.5, -0.5, 0.5,
+                 0.5, 0.5, 0.5); // triangle 2
+
+  vertices.push( -0.5, 0.5, -0.5,
+                 -0.5, -0.5, -0.5,
+                 -0.5, -0.5, 0.5, // triangle 1
+                 -0.5, 0.5, -0.5,
+                 -0.5, -0.5, 0.5,
+                 -0.5, 0.5, 0.5); // triangle 2
 
   verticesFloatArray = new Float32Array(vertices);
 
   // app ------> card
   vBuffersPointerToAspaceOnTheCard = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, vBuffersPointerToAspaceOnTheCard); // called multiple times
-  vBuffersPointerToAspaceOnTheCard.itemSize = 3; // 3 values per vertex (x, y, z)
+  vBuffersPointerToAspaceOnTheCard.itemSize = 4; // 3 values per vertex (x, y, z)
   vBuffersPointerToAspaceOnTheCard.numSize = 12; // 12 vertices
 
   // app ------> card
@@ -172,26 +153,56 @@ function createVertices() {
 
 
   // C O L O R   B U F F E R
-  shadersPointerToColorValues = gl.getAttribLocation(webglolProgram, 'attributeVertexColor');
   gl.enableVertexAttribArray(shadersPointerToColorValues);
 
   var verticesLength = vertices.length;
   colorArray = new Float32Array(verticesLength);
-var derp = [];
+  colorArray.set([1.0, -1.0, -1.0,     // set red dot color
+                  1.0, -1.0, -1.0,
+                  1.0, -1.0, -1.0,
+                  1.0, -1.0, -1.0], 0);
 
-  for (var i = 0; i < (24/3); i ++) {
-    derp.push(1.0);
-    derp.push(0.50);
-    derp.push(-0.5);
-  }
-  console.log('colorArray', colorArray.length)
-  colorArray.set(derp, 0)
-  // colorArray.set([1.0, -1.0, -1.0,     // set red dot color
-  //                 1.0, -1.0, -1.0,
-  //                 1.0, -1.0, -1.0,
-  //                 1.0, -1.0, -1.0], 0);
-  generateColorVertValues(colorArray);
+  colorArray.set([0.030, -0.13, -0.053,     // front
+                  0.030, -0.13, -0.053,
+                  0.030, -0.13, -0.053,
+                  0.030, -0.13, -0.053,
+                  0.030, -0.13, -0.053,
+                  0.030, -0.13, -0.053], 12);
 
+  colorArray.set([-1.0, 0.03, 0.3,     // back
+                  -1.0, 0.03, 0.3,
+                  -1.0, 0.03, 0.3,
+                  -1.0, 0.03, 0.3,
+                  -1.0, 0.03, 0.3,
+                  -1.0, 0.03, 0.3], 30);
+
+  colorArray.set([-1.0, 0.5, 0.5,     // front
+                  -1.0, 0.5, 0.5,
+                  -1.0, 0.5, 0.5,
+                  -1.0, 0.5, 0.5,
+                  -1.0, 0.5, 0.5,
+                  -1.0, 0.5, 0.5], 48);
+
+  colorArray.set([-1.0, -0.1, -0.1,     // front
+                  -1.0, -0.1, -0.1,
+                  -1.0, -0.1, -0.1,
+                  -1.0, -0.1, -0.1,
+                  -1.0, -0.1, -0.1,
+                  -1.0, -0.1, -0.1], 66);
+
+  colorArray.set([-1.0, -0.24, -0.24,     // front
+                  -1.0, -0.24, -0.24,
+                  -1.0, -0.24, -0.24,
+                  -1.0, -0.24, -0.24,
+                  -1.0, -0.24, -0.24,
+                  -1.0, -0.24, -0.24], 84);
+
+  colorArray.set([-1.0, -0.366, -0.166,     // front
+                  -1.0, -0.366, -0.166,
+                  -1.0, -0.366, -0.166,
+                  -1.0, -0.366, -0.166,
+                  -1.0, -0.366, -0.166,
+                  -1.0, -0.366, -0.166], 102);
 
   // app ------> card
   colorBuffersPointerToAspaceOnTheCard = gl.createBuffer();
@@ -205,15 +216,14 @@ var derp = [];
 
 // / / / / - - - -   D R A W   - - - - \ \ \ \ \\
 function draw() {
-  gl.viewport(0, 0, webglolCanvas.width, webglolCanvas.height);
-
   angleCounter++;
-  // angleCounter = devAngle
-  // angleCounter = 25
+  // angleCounter = 45
   util.rotate();
 
   gl.clearColor(0.0, 0, 0, .2);
   gl.clear(gl.COLOR_BUFFER_BIT);
+  gl.enable(gl.DEPTH_TEST); // THIS IS THE MAGIC LINE ***VERY IMPORTANT***
+  gl.depthFunc(gl.LEQUAL); // unsure if this is needed
 
   // V E R T I C E S   B U F F E R
   gl.bindBuffer(gl.ARRAY_BUFFER, vBuffersPointerToAspaceOnTheCard);
@@ -243,32 +253,10 @@ function draw() {
   gl.vertexAttribPointer(shadersPointerToThirdMatrix, 3, gl.FLOAT, false, 0, 0);
   // -------------
 
-
   ///// DRAWRINGZ /////
   // drawArrays(primatitve shape, start index, number of values to be rendered)
-  // gl.drawArrays(gl.LINES, 0, 12);
-  // gl.drawElements(gl.TRIANGLES, 0, 36, gl.USIGNED_SHORT, 0);
-  // gl.drawArrays(gl.TRIANGLES, 0, 24);
-  // gl.drawArrays(gl.TRIANGLES, 4, 36);
-  // gl.drawArrays(gl.POINTS, 0, );
-  gl.drawArrays(gl.TRIANGLE_STRIP, 0, devNum);
-  // gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4); // draw the center DOT
-
-
-  // var index_buffer = gl.createBuffer ();
-  //        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, index_buffer);
-  // var indices = [0,1,2, 0,2,3,
-  //                 4,5,6, 4,6,7,
-  //           8,9,10, 8,10,11,
-  //           12,13,14, 12,14,15,
-  //           16,17,18, 16,18,19,
-  //           20,21,22, 20,22,23]
-  //        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
-  // gl.enableVertexAttribArray(shadersPointerToColorValues);
-  // gl.vertexAttribPointer(shadersPointerToColorValues, 3, gl.FLOAT, false, 0, 0);
-
-
-
+  gl.drawArrays(gl.TRIANGLES, 4, 36);
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4); // draw the center DOT
 // debugger
   requestAnimationFrame(draw);
 }
