@@ -23,6 +23,8 @@ void main() {
 precision mediump float;  //
 // uniform- ...
 uniform vec2 u_resolution;
+// honestly this is completely unnecessary to achieve
+// color gradient... could just as easily be sin(x.x)
 uniform float u_time;
 
 void main() {
@@ -31,6 +33,7 @@ void main() {
 
   // gl_FragColor- 4D vector [ R, G, B, A ]
   gl_FragColor = vec4(st.x, sin(u_time), st.y, 1);
+  // gl_FragColor = vec4(st.x, sin(u_time), st.y, 1);
   // value of Red is determined by the x value (0-1 from left to right)
   // value of Green is determined by trigonometry and tbd time magic
   // value of Blue is determined by the y value (0-1 from left to right)
