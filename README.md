@@ -1,5 +1,5 @@
 # taste the rainbow
 
-i was super happy when i got this to work
+[this](http://www.lighthouse3d.com/tutorials/glsl-tutorial/uniform-variables/) is a pretty decent explaination of Uniform variables in GL
 
-TODO: add some information about uniforms
+![taste the rainbow](https://github.com/vipyne/webgLOL/blob/3-taste-the-rainbow/3-taste-the-rainbow.png)
