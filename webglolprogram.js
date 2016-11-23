@@ -153,8 +153,6 @@ function createVertices() {
 
 
   // C O L O R   B U F F E R
-  shadersPointerToColorValues = gl.getAttribLocation(webglolProgram, 'attributeVertexColor');
-  shadersPointerToColorValues = gl.getAttribLocation(webglolProgram, 'attributeVertexColor');
   gl.enableVertexAttribArray(shadersPointerToColorValues);
 
   var verticesLength = vertices.length;
@@ -171,12 +169,12 @@ function createVertices() {
                   0.30, -0.3, -0.3,
                   0.30, -0.3, -0.3], 12);
 
-  colorArray.set([-1.0, 0.3, 0.3,     // back
-                  -1.0, 0.3, 0.3,
-                  -1.0, 0.3, 0.3,
-                  -1.0, 0.3, 0.3,
-                  -1.0, 0.3, 0.3,
-                  -1.0, 0.3, 0.3], 30);
+  colorArray.set([-1.0, 0.03, 0.3,     // back
+                  -1.0, 0.03, 0.3,
+                  -1.0, 0.03, 0.3,
+                  -1.0, 0.03, 0.3,
+                  -1.0, 0.03, 0.3,
+                  -1.0, 0.03, 0.3], 30);
 
   colorArray.set([-1.0, 0.5, 0.5,     // front
                   -1.0, 0.5, 0.5,
@@ -224,6 +222,8 @@ function draw() {
 
   gl.clearColor(0.0, 0, 0, .2);
   gl.clear(gl.COLOR_BUFFER_BIT);
+  gl.enable(gl.DEPTH_TEST); // THIS IS THE MAGIC LINE ***VERY IMPORTANT***
+  gl.depthFunc(gl.LEQUAL); // unsure if this is needed
 
   // V E R T I C E S   B U F F E R
   gl.bindBuffer(gl.ARRAY_BUFFER, vBuffersPointerToAspaceOnTheCard);
