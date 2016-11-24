@@ -1,1 +1,3 @@
 ./ignore-old/*
+./fups/*
+.DS_Store
