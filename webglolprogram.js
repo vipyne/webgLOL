@@ -1,21 +1,55 @@
-function webglol() {
-  // get canvas element
-  var webglolCanvas = document.getElementById('webglol');
-  // define WebGLRenderingContext
-  //// getContext(context, options)
-  var gl = webglolCanvas.getContext('experimental-webgl');
+var gl,
+    webglolProgram;
 
-  // Specify the color values used when clearing color buffers.
-  //// gl.clearColor(red, green, blue, alpha)
-  gl.clearColor(0, 0, 0, .2);
+var shadersPointerToVertices;
+var shadersPointerToResolutionValues;
+var shadersPointerToWorldMatrix;
+var shadersPointerToCameraMatrix;
+var shadersPointerToColorValues;
+var verticesFloatArray;
+var vBuffersPointerToAspaceOnTheCard;
+var colorBuffersPointerToAspaceOnTheCard;
+var matrix;
+var angleCounter = 0;
 
-  // clears buffers to preset values specified by clearColor(), clearDepth() and clearStencil().
-  //// gl.clear(gl.COLOR_BUFFER_BIT || gl.DEPTH_BUFFER_BIT || gl.STENCIL_BUFFER_BIT)
-  gl.clear(gl.COLOR_BUFFER_BIT);
+function init() {
+  webglolInit();
+  createShaders();
+  locateShaderAttributes();
+  createVertices();
+  draw();
+}
 
-  var webglolProgram = gl.createProgram();
+function webglolInit() {
+  webglolCanvas = document.getElementById('webglol');
+  gl = webglolCanvas.getContext('experimental-webgl');
+  webglolProgram = gl.createProgram();
+}
 
-  // time to throw some shade
+util = {
+  rotate : function(angle) {
+    var angle = angleCounter;
+    var radian = Math.PI * angle / 180.0;
+    var cos = Math.cos(radian);
+    var sin = Math.sin(radian);
+    matrix = {
+      world : [cos,-sin, 0, 0,
+               sin, cos, 0, 0,
+               0,   0,   1, 0,
+               0,   0,   0, 1],
+      camera :[cos, 0, sin, 0,
+               0,   1,   0, 0,
+              -sin, 0, cos, 0,
+               0,   0,   0, 1],
+      third : [1,   0,   0, 0,
+               0, cos,-sin, 0,
+               0, sin, cos, 0,
+               0,   0,   0, 1]
+    }
+  }
+}
+
+function createShaders() {
   var vertexShaderScript = document.getElementById('vertex-shader').text;
   var fragmentShaderScript = document.getElementById('fragment-shader').text;
 
@@ -37,93 +71,195 @@ function webglol() {
 
   gl.linkProgram(webglolProgram);
   gl.useProgram(webglolProgram);
+}
 
-  var triangleAttributePosition = gl.getAttribLocation(webglolProgram, 'pos');
+function locateShaderAttributes() {
+  // set up pointers from the shader on the card to the values in the app
 
-  // set the resolution
-  var resolutionLocation = gl.getUniformLocation(webglolProgram, 'u_resolution');
-  gl.uniform2f(resolutionLocation, webglolCanvas.width, webglolCanvas.height);
+  // app <------ card
+  shadersPointerToVertices = gl.getAttribLocation(webglolProgram, 'pos');
+  shadersPointerToResolutionValues = gl.getUniformLocation(webglolProgram, 'u_resolution');
+  shadersPointerToWorldMatrix = gl.getUniformLocation(webglolProgram, 'world');
+  shadersPointerToCameraMatrix = gl.getUniformLocation(webglolProgram, 'camera');
+  shadersPointerToThirdMatrix = gl.getUniformLocation(webglolProgram, 'third');
+  shadersPointerToColorValues = gl.getAttribLocation(webglolProgram, 'attributeVertexColor');
 
-  // timing
-  this.startTime = this.startTime ? this.startTime : new Date().getTime() / 10000;
-  var time = new Date().getTime() / 10000 - this.startTime;
-  var timeLocation = gl.getUniformLocation(webglolProgram, 'u_time');
-  gl.uniform1f(timeLocation, time);
+  // set static values (resolution)
+  gl.uniform2f(shadersPointerToResolutionValues, webglolCanvas.width, webglolCanvas.height);
+}
 
-  // spin counter
-  this.angleCounter = this.angleCounter ? this.angleCounter : 360.0; // 360 degrees in a circle
-  window.requestAnimationFrame(function increaseAngleCounter() {
-    if (this.angleCounter === 0.0) {
-      this.angleCounter = 360.0;
-    } else {
-      this.angleCounter -= 1.0;
-    }
-    return this.angleCounter;
-  });
-
-  // // rotation
-  // var angle = this.angleCounter;
-  // var radian = Math.PI * angle / 180.0;
-  // var cos = Math.cos(radian);
-  // var sin = Math.sin(radian);
-  // var matrixX = [1,   0,   0, 0, // X
-  //                0, cos,-sin, 0,
-  //                0, sin, cos, 0,
-  //                0,   0,   0, 1];
-  // var matrixY = [cos, 0, sin, 0, // Y
-  //                0,   1,   0, 0,
-  //               -sin, 0, cos, 0,
-  //                0,   0,   0, 1];
-  // var matrixZ = [cos,-sin, 0, 0, // Z
-  //                sin, cos, 0, 0,
-  //                0,   0,   1, 0,
-  //                0,   0,   0, 1];
-
-  // vertices
+function createVertices() {
   var vertices = [];
 
-  // center dot
   vertices.push( -0.01,  0.01, 0.0,
                  -0.01, -0.01, 0.0,
                   0.01,  0.01, 0.0,
-                  0.01, -0.01, 0.0); // actually a square
+                  0.01, -0.01, 0.0); // center DOT - actually a little square
 
-  // // box
-  // vertices.push( -0.51,  0.51, 0.0,
-  //                -0.51, -0.51, 0.0,
-  //                 0.51,  0.51, 0.0,
-  //                 0.51, -0.51, 0.0); // actually a square
+  // T H E   B O X
+  vertices.push( -0.5, 0.5, 0.5,
+                 -0.5, -0.5, 0.5,
+                 0.5, -0.5, 0.5, // triangle 1
+                 -0.5, 0.5, 0.5,
+                 0.5, -0.5, 0.5,
+                 0.5, 0.5, 0.5); // triangle 2
 
-  var verticesFloatArray = new Float32Array(vertices);
+  vertices.push( -0.5, 0.5, -0.5,
+                 -0.5, -0.5, -0.5,
+                 0.5, -0.5, -0.5, // triangle 1
+                 -0.5, 0.5, -0.5,
+                 0.5, -0.5, -0.5,
+                 0.5, 0.5, -0.5); // triangle 2
 
-  gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
-  gl.bufferData(gl.ARRAY_BUFFER, verticesFloatArray, gl.DYNAMIC_DRAW);
-  gl.enableVertexAttribArray(triangleAttributePosition);
-  gl.vertexAttribPointer(triangleAttributePosition, 3, gl.FLOAT, false, 0, 0);
+  vertices.push( -0.5, 0.5, 0.5,
+                 -0.5, 0.5, -0.5,
+                 0.5, 0.5, -0.5, // triangle 1
+                 -0.5, 0.5, 0.5,
+                 0.5, 0.5, -0.5,
+                 0.5, 0.5, 0.5); // triangle 2
 
-  // ///// %%%%%
-  // var colorBuffer = gl.createBuffer();
-  // gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-  // var verticesLength = vertices.length;
-  // var colorArray = new Float32Array(verticesLength);
-  // colorArray.set([1.0, -1.0, -1.0,
-  //                 1.0, -1.0, -1.0,
-  //                 1.0, -1.0, -1.0,
-  //                 1.0, -1.0, -1.0], 0);
+  vertices.push( -0.5, -0.5, 0.5,
+                 -0.5, -0.5, -0.5,
+                 0.5, -0.5, -0.5, // triangle 1
+                 -0.5, -0.5, 0.5,
+                 0.5, -0.5, -0.5,
+                 0.5, -0.5, 0.5); // triangle 2
 
-  // gl.bufferData(gl.ARRAY_BUFFER, colorArray, gl.DYNAMIC_DRAW);
-  // gl.enableVertexAttribArray(colorLocation);
-  // gl.vertexAttribPointer(colorLocation, 3, gl.FLOAT, false, 0, 0);
-  // ///// %%%%%
+  vertices.push( 0.5, 0.5, -0.5,
+                 0.5, -0.5, -0.5,
+                 0.5, -0.5, 0.5, // triangle 1
+                 0.5, 0.5, -0.5,
+                 0.5, -0.5, 0.5,
+                 0.5, 0.5, 0.5); // triangle 2
+
+  vertices.push( -0.5, 0.5, -0.5,
+                 -0.5, -0.5, -0.5,
+                 -0.5, -0.5, 0.5, // triangle 1
+                 -0.5, 0.5, -0.5,
+                 -0.5, -0.5, 0.5,
+                 -0.5, 0.5, 0.5); // triangle 2
+
+  verticesFloatArray = new Float32Array(vertices);
+
+  // app ------> card
+  vBuffersPointerToAspaceOnTheCard = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, vBuffersPointerToAspaceOnTheCard); // called multiple times
+  vBuffersPointerToAspaceOnTheCard.itemSize = 4; // 3 values per vertex (x, y, z)
+  vBuffersPointerToAspaceOnTheCard.numSize = 12; // 12 vertices
+
+  // app ------> card
+  gl.bufferData(gl.ARRAY_BUFFER, verticesFloatArray, gl.STATIC_DRAW); // called multiple times
+  // E N D   V E R T I C E S   B U F F E R
 
 
-  // drawArrays(primatitve shape, start index, number of values to be rendered)
-  // gl.drawArrays(gl.TRIANGLES, 4, 8); // draw the box
-  // gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4); // draw the center dot
-  gl.drawArrays(gl.TRIANGLES, 0, 4); // draw the center dot
+  // C O L O R   B U F F E R
+  gl.enableVertexAttribArray(shadersPointerToColorValues);
 
-  // ------------------------------
-  requestAnimationFrame(webglol);
+  var verticesLength = vertices.length;
+  colorArray = new Float32Array(verticesLength);
+  colorArray.set([1.0, -1.0, -1.0,     // set red dot color
+                  1.0, -1.0, -1.0,
+                  1.0, -1.0, -1.0,
+                  1.0, -1.0, -1.0], 0);
+
+  colorArray.set([0.030, -0.13, -0.053,     // front
+                  0.030, -0.13, -0.053,
+                  0.030, -0.13, -0.053,
+                  0.030, -0.13, -0.053,
+                  0.030, -0.13, -0.053,
+                  0.030, -0.13, -0.053], 12);
+
+  colorArray.set([-1.0, 0.03, 0.3,     // back
+                  -1.0, 0.03, 0.3,
+                  -1.0, 0.03, 0.3,
+                  -1.0, 0.03, 0.3,
+                  -1.0, 0.03, 0.3,
+                  -1.0, 0.03, 0.3], 30);
+
+  colorArray.set([-1.0, 0.5, 0.5,     // front
+                  -1.0, 0.5, 0.5,
+                  -1.0, 0.5, 0.5,
+                  -1.0, 0.5, 0.5,
+                  -1.0, 0.5, 0.5,
+                  -1.0, 0.5, 0.5], 48);
+
+  colorArray.set([-1.0, -0.1, -0.1,     // front
+                  -1.0, -0.1, -0.1,
+                  -1.0, -0.1, -0.1,
+                  -1.0, -0.1, -0.1,
+                  -1.0, -0.1, -0.1,
+                  -1.0, -0.1, -0.1], 66);
+
+  colorArray.set([-1.0, -0.24, -0.24,     // front
+                  -1.0, -0.24, -0.24,
+                  -1.0, -0.24, -0.24,
+                  -1.0, -0.24, -0.24,
+                  -1.0, -0.24, -0.24,
+                  -1.0, -0.24, -0.24], 84);
+
+  colorArray.set([-1.0, -0.366, -0.166,     // front
+                  -1.0, -0.366, -0.166,
+                  -1.0, -0.366, -0.166,
+                  -1.0, -0.366, -0.166,
+                  -1.0, -0.366, -0.166,
+                  -1.0, -0.366, -0.166], 102);
+
+  // app ------> card
+  colorBuffersPointerToAspaceOnTheCard = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffersPointerToAspaceOnTheCard); // called multiple times
+  colorBuffersPointerToAspaceOnTheCard.itemSize = 3;
+  colorBuffersPointerToAspaceOnTheCard.numSize = 12;
+
+  // app ------> card
+  gl.bufferData(gl.ARRAY_BUFFER, colorArray, gl.DYNAMIC_DRAW); // called multiple times
 }
 
-window.onload = webglol;
+// / / / / - - - -   D R A W   - - - - \ \ \ \ \\
+function draw() {
+  angleCounter++;
+  // angleCounter = 45
+  util.rotate();
+
+  gl.clearColor(0.0, 0, 0, .2);
+  gl.clear(gl.COLOR_BUFFER_BIT);
+  gl.enable(gl.DEPTH_TEST); // THIS IS THE MAGIC LINE ***VERY IMPORTANT***
+  gl.depthFunc(gl.LEQUAL); // unsure if this is needed
+
+  // V E R T I C E S   B U F F E R
+  gl.bindBuffer(gl.ARRAY_BUFFER, vBuffersPointerToAspaceOnTheCard);
+  // app ------> card
+  gl.bufferData(gl.ARRAY_BUFFER, verticesFloatArray, gl.STATIC_DRAW);
+    // gl.bufferData = pushes the values from app to card
+  gl.enableVertexAttribArray(shadersPointerToVertices);
+  gl.vertexAttribPointer(shadersPointerToVertices, 3, gl.FLOAT, false, 0, 0);
+
+  // C O L O R   B U F F E R
+  gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffersPointerToAspaceOnTheCard);
+  // app ------> card
+  gl.bufferData(gl.ARRAY_BUFFER, colorArray, gl.STATIC_DRAW);
+    // gl.bufferData = pushes the values from app to card
+  gl.enableVertexAttribArray(shadersPointerToColorValues);
+  gl.vertexAttribPointer(shadersPointerToColorValues, 3, gl.FLOAT, false, 0, 0);
+
+  // -------------
+  gl.uniformMatrix4fv(shadersPointerToWorldMatrix, false, new Float32Array(matrix.world));
+  gl.enableVertexAttribArray(shadersPointerToWorldMatrix);
+  gl.vertexAttribPointer(shadersPointerToWorldMatrix, 3, gl.FLOAT, false, 0, 0);
+  gl.uniformMatrix4fv(shadersPointerToCameraMatrix, false, new Float32Array(matrix.camera));
+  gl.enableVertexAttribArray(shadersPointerToCameraMatrix);
+  gl.vertexAttribPointer(shadersPointerToCameraMatrix, 3, gl.FLOAT, false, 0, 0);
+  gl.uniformMatrix4fv(shadersPointerToThirdMatrix, false, new Float32Array(matrix.third));
+  gl.enableVertexAttribArray(shadersPointerToThirdMatrix);
+  gl.vertexAttribPointer(shadersPointerToThirdMatrix, 3, gl.FLOAT, false, 0, 0);
+  // -------------
+
+  ///// DRAWRINGZ /////
+  // drawArrays(primatitve shape, start index, number of values to be rendered)
+  gl.drawArrays(gl.TRIANGLES, 4, 36);
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4); // draw the center DOT
+
+  // window.requestAnimationFrame(callback);
+  requestAnimationFrame(draw);
+}
+
+window.onload = init;
