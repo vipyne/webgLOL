@@ -4,7 +4,8 @@ var webglolCanvas,
 
 var verticesFloatArray;
 var mouseLocation;
-this.mouse = [50, 50];
+this.mouse = [0, 0]; // init value
+var thatMouse = this.mouse;
 var triangleAttributePosition;
 var resolutionLocation;
 var shadersPointerToWorldMatrix;
@@ -13,8 +14,6 @@ this.startTime = this.startTime ? this.startTime : new Date().getTime() / 10000;
 var timeLocation;
 var numberOfTriangles = 100;
 var vertices = [];
-
-
 
 function init() {
   webglolInit();
@@ -35,10 +34,23 @@ function webglolInit() {
 
 util = {
   matrix : {
-    world : [1,0, 0, 0,
-             0, 1, 0, 0,
-             0,   0,   1, 0,
-             0,   0,   0, 1]
+    world : function(thisMouse) {
+      var canvasWidth = webglolCanvas.width;
+      var canvasHeight = webglolCanvas.height;
+      var mouseX = thisMouse[0];
+      var mouseY = thisMouse[1];
+      var angleTemp = mouseX/canvasWidth + mouseY/canvasHeight;
+      if (mouseX < mouseY) {
+        console.log('X less than Y');
+        angleTemp += (mouseX/canvasWidth - mouseY/canvasHeight);
+      }
+      // return [Math.cos(angleTemp), -Math.sin(angleTemp), 0, 0,
+      //         Math.sin(angleTemp),  Math.cos(angleTemp), 0, 0,
+      return [angleTemp, 0, 0, angleTemp*2,
+              -.2,  1, 0, 0,
+               .2,                 0, 1, 0,
+               0,                 0, 0, 1]
+             }
   }
 }
 
@@ -91,57 +103,6 @@ function locateShaderAttributes() {
 }
 
 function createVertices() {
-
-  // `O`
-  degreesPerTriangle = (4 * Math.PI) / numberOfTriangles;
-  centerX = 0.5;
-
-  for(var i = 0; i < numberOfTriangles; i++) {
-      var index = i * 3;
-      var angle = degreesPerTriangle * i;
-      var scale = 2;
-
-      vertices[index] = Math.cos(angle) / scale;               // x
-      vertices[index + 1] = Math.sin(angle) / scale + centerX; // y
-      vertices[index + 2] = 0;                                 // z
-
-
-
- // // `O`
- //  var degreesPerTriangle = (4 * Math.PI) / numberOfTriangles;
- //  // var centerX = 1.5;
- //  // this.mouseX = 1.0;
- //  // window.addEventListener('mousemove', function(e) {
- //  //   console.log('mouseX', e.clientX / webglolCanvas.width)
- //  //   this.mouseX = e.clientX / webglolCanvas.width;
- //  // console.log('v---', this.mouseX)
- //  // })
- //  for(var i = 0; i < numberOfTriangles; i++) {
- //    var index = i * 3;
- //    var angle = degreesPerTriangle * i;
- //    var scale = 1;
- //  // var centerX = (this.mouse[0]/webglolCanvas.width);
- //  //   if (centerX > 0.5) {
- //  //     centerX = centerX
- //  //   }
- //    // this.mouse[0]/webglolCanvas.width) = x/2;
- //    // this.mouse[0] * 2 = webglolCanvas.width) * x;
- //    var centerX = (this.mouse[0] * 2 / webglolCanvas.width) - 1.0;
- //    var centerY = (this.mouse[1] * 2 / webglolCanvas.height) - 1.0;
- //    console.log(' mouse [x,y]', [this.mouse[0], this.mouse[1]])
- //    console.log('[x,y]', [centerX, centerY])
- //    vertices[index] = Math.cos(angle) / scale + centerX;               // x
- //    // vertices[index + 1] = Math.sin(angle) / scale;           // y
- //    vertices[index + 1] = Math.sin(angle) / scale; // y
- //    vertices[index + 2] = 0;
- //    console.log('x,y,z', vertices[index + 0])                               // z
- //    console.log('x,y,z', vertices[index + 1])                               // z
- //    console.log('x,y,z', vertices[index + 2])                               // z
- //  }
-
-
-
-
   // `L`s
   vertices.push( -0.5, 0.0, 0.0,
                  -1.5, 0.0, 0.0,
@@ -150,9 +111,23 @@ function createVertices() {
                   0.5, 0.0, 0.0,
                   1.5, 0.0, 0.0 ); // second `L`
 
+  // `O`
+  degreesPerTriangle = (4 * Math.PI) / numberOfTriangles;
+  centerX = 0.5;
+
+  for(var i = 6; i < numberOfTriangles + 6; i++) {
+    var index = i * 3;
+    var angle = degreesPerTriangle * i;
+    var scale = 2;
+
+    vertices[index] = Math.cos(angle) / scale;               // x
+    vertices[index + 1] = Math.sin(angle) / scale + centerX; // y
+    vertices[index + 2] = 0;                                 // z
+  }
+
   verticesFloatArray = new Float32Array(vertices);
 
-    // MOUSE LOCATION
+  // MOUSE LOCATION
   window.addEventListener('mousemove', function(event) {
     this.mouse = [event.clientX, event.clientY];
     // return [event.clientX, event.clientY];
@@ -160,6 +135,10 @@ function createVertices() {
 }
 
 function draw() {
+  // if (this.mouse != [0,0] && thatMouse == this.mouse) {
+  //   console.log('derpreutrrrnnnnn')
+  //   return;
+  // }
   // Specify the color values used when clearing color buffers.
   //// gl.clearColor(red, green, blue, alpha)
   gl.clearColor(0, 0, 0, 0.2);
@@ -169,20 +148,53 @@ function draw() {
   gl.clear(gl.COLOR_BUFFER_BIT);
 
 
+  // // update `O` position
+  // var degreesPerTriangle = (4 * Math.PI) / numberOfTriangles;
+  // // var centerX = 1.5;
+  // // this.mouseX = 1.0;
+  // for(var i = 6; i < numberOfTriangles + 6; i++) {
+  //   var index = i * 3;
+  //   var angle = degreesPerTriangle * i;
+  //   var scale = 1;
+  // // var centerX = (this.mouse[0]/webglolCanvas.width);
+  // //   if (centerX > 0.5) {
+  // //     centerX = centerX
+  // //   }
+  //   // this.mouse[0]/webglolCanvas.width) = x/2;
+  //   // this.mouse[0] * 2 = webglolCanvas.width) * x;
+  //   var centerX = (this.mouse[0] * 2 / webglolCanvas.width) - 1.0;
+  //   var centerY = (this.mouse[1] * 2 / webglolCanvas.height) - 1.0;
+  //   console.log(' mouse [x,y]', [this.mouse[0], this.mouse[1]])
+  //   console.log('[x,y]', [centerX, centerY])
+  //   vertices[index] = Math.cos(angle) / scale + centerX;               // x
+  //   // vertices[index + 1] = Math.sin(angle) / scale;           // y
+  //   vertices[index + 1] = Math.sin(angle) / scale; // y
+  //   vertices[index + 2] = 0;
+  //   console.log('x', vertices[index + 0]);// z
+  //   console.log('y', vertices[index + 1]);// z
+  //   console.log('z', vertices[index + 2]);// z
+  // }
 
 
   gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
-  gl.bufferData(gl.ARRAY_BUFFER, verticesFloatArray, gl.DYNAMIC_DRAW);
+  gl.bufferData(gl.ARRAY_BUFFER, verticesFloatArray, gl.STATIC_DRAW);
 
   gl.enableVertexAttribArray(triangleAttributePosition);
   gl.vertexAttribPointer(triangleAttributePosition, 3, gl.FLOAT, false, 0, 0);
 
-  gl.uniformMatrix4fv(shadersPointerToWorldMatrix, false, new Float32Array(util.matrix.world));
+  gl.uniformMatrix4fv(shadersPointerToWorldMatrix, false, new Float32Array(util.matrix.world(this.mouse)));
   gl.enableVertexAttribArray(shadersPointerToWorldMatrix);
 
+  // if (thatMouse == this.mouse) {
+  //   console.log('derpreutrrrnnnnn')
+  //   // draw();
+  //   return;
+  // }
+  // thatMouse = this.mouse;
+
   // drawArrays(primatitve shape, start index, number of values to be rendered)
-  gl.drawArrays(gl.TRIANGLES, numberOfTriangles, 6); // draw the `L`s
-  gl.drawArrays(gl.TRIANGLE_FAN, 0, numberOfTriangles - 5); // draw the `O`
+  gl.drawArrays(gl.TRIANGLES, 0, 6); // draw the `L`s
+  gl.drawArrays(gl.TRIANGLE_FAN, 6, numberOfTriangles); // draw the `O`
 
   // window.requestAnimationFrame(callback);
   // requestAnimationFrame(draw);
