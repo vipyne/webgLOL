@@ -1,4 +1,4 @@
-# webgLOL
+# webg![](https://github.com/vipyne/webgLOL/blob/master/_webgLOL_.png)
 
 This is a playground for teaching myself [WebGL](https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API).
 Checkout each branch to follow the chronicles of my self directed curriculum.
