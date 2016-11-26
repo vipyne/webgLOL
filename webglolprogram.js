@@ -21,7 +21,10 @@ function init() {
 }
 
 function webglolInit() {
+  // get canvas element
   webglolCanvas = document.getElementById('webglol');
+  // define WebGLRenderingContext
+  //// getContext(context, options)
   gl = webglolCanvas.getContext('experimental-webgl');
   webglolProgram = gl.createProgram();
 }
@@ -78,7 +81,7 @@ function locateShaderAttributes() {
 
   // app <------ card
   shadersPointerToVertices = gl.getAttribLocation(webglolProgram, 'pos');
-  shadersPointerToResolutionValues = gl.getUniformLocation(webglolProgram, 'u_resolution');
+  shadersPointerToResolutionValues = gl.getUniformLocation(webglolProgram, 'u_resolution'); // set the resolution
   shadersPointerToWorldMatrix = gl.getUniformLocation(webglolProgram, 'world');
   shadersPointerToCameraMatrix = gl.getUniformLocation(webglolProgram, 'camera');
   shadersPointerToThirdMatrix = gl.getUniformLocation(webglolProgram, 'third');
@@ -253,11 +256,11 @@ function draw() {
   gl.vertexAttribPointer(shadersPointerToThirdMatrix, 3, gl.FLOAT, false, 0, 0);
   // -------------
 
-  ///// DRAWRINGZ /////
   // drawArrays(primatitve shape, start index, number of values to be rendered)
   gl.drawArrays(gl.TRIANGLES, 4, 36);
-  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4); // draw the center DOT
-// debugger
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4); // draw the red center square (inside cube)
+
+  // window.requestAnimationFrame(callback);
   requestAnimationFrame(draw);
 }
 
