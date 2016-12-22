@@ -4,7 +4,7 @@ This is a playground for teaching myself [WebGL](https://developer.mozilla.org/e
 Checkout each branch to follow the chronicles of my self directed curriculum.
 I'm looking at lot at [The Book of Shaders](http://patriciogonzalezvivo.com/2015/thebookofshaders/).
 The READMEs for each branch also contain more links about specific tasks that can be achieved in WebGL.
-I'd like to eventually have an explanatory comment for every line of each branch as well as add more branches. PRs welcome!
+I'd like to eventually have an explanatory comment for every line of code in each branch as well as add more branches. PRs welcome!
 
 * `1-hello triangle` - the hello world of openGL
 * `2-LOL` - more than just triangles!
