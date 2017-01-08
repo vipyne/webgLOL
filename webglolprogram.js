@@ -39,41 +39,53 @@ util = {
       var halfCanvasHeight = webglolCanvas.height/2;
       var mouseX = thisMouse[0];
       var mouseY = thisMouse[1];
+      var xCoord = mouseX - halfCanvasWidth;
+      var yCoord = mouseY - halfCanvasHeight;
       // console.log('halfCanvasHeight', halfCanvasHeight)
       // console.log('mouseY', mouseY)
       var XangleTemp = mouseY/mouseX;
       var YangleTemp = 180 - (XangleTemp + 90);
 
-console.log('---')
-console.log('---')
-      var xAngle = (mouseX - halfCanvasWidth) / (mouseY - halfCanvasHeight);
-      console.log('xAngle', xAngle)
+      var sqX = (mouseX - halfCanvasWidth) * (mouseX - halfCanvasWidth);
+      var sqY = (mouseY - halfCanvasHeight) * (mouseY - halfCanvasHeight);
 
-      // Math.PI
+      var hypotenuseLength = Math.sqrt(sqX + sqY);
 
+      var normalizedX = xCoord/hypotenuseLength;
+      var normalizedY = yCoord/hypotenuseLength;
+
+      var xAngle = normalizedX / normalizedY;
+
+      console.log('---')
+      console.log('mouseX,mouseY', thisMouse)
+      console.log('---')
+      console.log('hypotenuseLength', hypotenuseLength)
+
+console.log('normalizedY', normalizedY)
+console.log('normalizedX', normalizedX)
+      // var xAngle = Math.sqrt(Math.abs((mouseX - halfCanvasWidth) / (mouseY - halfCanvasHeight)));
       var xRad = Math.cos( xAngle );
-      console.log('xRad', xRad)
       var xDegrees = xRad * 180 / Math.PI;
-      console.log('xDegrees', xDegrees)
-
       var yDegrees = 180 - (xDegrees + 90);
       // var y = Math.tan( xAngle );
-      var y = (yDegrees * Math.PI) / 180;
-console.log('---')
+      var yRad = (yDegrees * Math.PI) / 180;
 
-      // console.log('x', x)
-console.log('yDegrees', yDegrees)
-console.log('y', y)
-      // if (mouseX < mouseY) {
-      //   console.log('X less than Y');
-      //   angleTemp += (mouseX/halfCanvasWidth - mouseY/halfCanvasHeight);
-      // }
+      // console.log('---')
+      // console.log('---')
+      console.log('xAngle', xAngle)
+      // console.log('xRad', xRad)
+      // // console.log('x', x)
+      // console.log('xDegrees', xDegrees)
+      // console.log('---')
+      // console.log('yDegrees', yDegrees)
+      // console.log('y', y)
       // return [Math.cos(XangleTemp), -Math.sin(YangleTemp), 0, 0,
       //         Math.sin(XangleTemp),  Math.cos(YangleTemp), 0, 0,
-      return [Math.cos(xAngle), -Math.sin(xAngle), 0, 0,
-      // return [xRad, -Math.sin( xAngle ), 0, 0,
-              Math.sin(xAngle),  Math.cos(xAngle), 0, 0,
-              // 0,  1, 0, 0,
+      return [Math.atan2(normalizedY, normalizedX), 0, 0, 0,
+      // return [Math.atan2((mouseX - halfCanvasWidth), (mouseY - halfCanvasHeight)), 0, 0, 0,
+      // return [Math.cos(xAngle), -Math.sin( xAngle ), 0, 0,
+              // Math.sin( xAngle ),  Math.cos(xAngle), 0, 0,
+              0,  1, 0, 0,
                0,                 0, 1, 0,
                0,                 0, 0, 1]
              }
