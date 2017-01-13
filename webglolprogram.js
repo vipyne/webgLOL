@@ -31,7 +31,6 @@ function webglolInit() {
   gl = webglolCanvas.getContext('experimental-webgl');
   webglolProgram = gl.createProgram();
 }
-var derp = false;
 util = {
   matrix : {
     world : function(thisMouse) {
@@ -41,8 +40,6 @@ util = {
       var mouseY = thisMouse[1];
       var xCoord = mouseX - halfCanvasWidth;
       var yCoord = mouseY - halfCanvasHeight;
-      // console.log('halfCanvasHeight', halfCanvasHeight)
-      // console.log('mouseY', mouseY)
       var XangleTemp = mouseY/mouseX;
       var YangleTemp = 180 - (XangleTemp + 90);
 
@@ -50,47 +47,27 @@ util = {
       var sqY = (mouseY - halfCanvasHeight) * (mouseY - halfCanvasHeight);
 
       var hypotenuseLength = Math.sqrt(sqX + sqY);
-
       var normalizedX = xCoord/hypotenuseLength;
       var normalizedY = yCoord/hypotenuseLength;
 
-      var xAngle = normalizedX / normalizedY;
+      // var xAngle = normalizedX / normalizedY;
+      // var xRad = Math.cos( xAngle );
+      // var xDegrees = xRad * 180 / Math.PI;
+      // var yDegrees = 180 - (xDegrees + 90);
+      // var yRad = (yDegrees * Math.PI) / 180; // all the math i tried that i apparently did not need to do.
 
-      console.log('---')
-      console.log('mouseX,mouseY', thisMouse)
-      console.log('---')
-      console.log('hypotenuseLength', hypotenuseLength)
+      var atan2thingMouse = Math.atan2(normalizedY, normalizedX); // this produces the angle for the sin/cos calculations...!
 
-console.log('normalizedY', normalizedY)
-console.log('normalizedX', normalizedX)
-      // var xAngle = Math.sqrt(Math.abs((mouseX - halfCanvasWidth) / (mouseY - halfCanvasHeight)));
-      var xRad = Math.cos( xAngle );
-      var xDegrees = xRad * 180 / Math.PI;
-      var yDegrees = 180 - (xDegrees + 90);
-      // var y = Math.tan( xAngle );
-      var yRad = (yDegrees * Math.PI) / 180;
-
-      // console.log('---')
-      // console.log('---')
-      console.log('xAngle', xAngle)
-      // console.log('xRad', xRad)
-      // // console.log('x', x)
-      // console.log('xDegrees', xDegrees)
-      // console.log('---')
-      // console.log('yDegrees', yDegrees)
-      // console.log('y', y)
-      // return [Math.cos(XangleTemp), -Math.sin(YangleTemp), 0, 0,
-      //         Math.sin(XangleTemp),  Math.cos(YangleTemp), 0, 0,
-      return [Math.atan2(normalizedY, normalizedX), 0, 0, 0,
-      // return [Math.atan2((mouseX - halfCanvasWidth), (mouseY - halfCanvasHeight)), 0, 0, 0,
-      // return [Math.cos(xAngle), -Math.sin( xAngle ), 0, 0,
-              // Math.sin( xAngle ),  Math.cos(xAngle), 0, 0,
-              0,  1, 0, 0,
-               0,                 0, 1, 0,
-               0,                 0, 0, 1]
+      // rotation matrix:
+      return [Math.cos(atan2thingMouse), -Math.sin( atan2thingMouse ), 0, 0,
+              Math.sin( atan2thingMouse ),  Math.cos(atan2thingMouse), 0, 0,
+               0,                                                   0, 1, 0,
+               0,                                                   0, 0, 1]
              }
   }
 }
+var animationBool = true; // useful for debugging
+
 
 function createShaders() {
   // time to throw some shade
@@ -134,8 +111,6 @@ function locateShaderAttributes() {
   timeLocation = gl.getUniformLocation(webglolProgram, 'u_time');
   gl.uniform1f(timeLocation, time);
 
-  console.log('this.mouse', this.mouse)
-  // console.log('mouse', this.mouse[0]/webglolCanvas.width)
   mouseLocation = gl.getUniformLocation(webglolProgram, 'u_mouse');
   gl.uniform2f(mouseLocation, this.mouse[0]/webglolCanvas.width, this.mouse[1],webglolCanvas.height);
 }
@@ -179,7 +154,6 @@ function createVertices() {
   // MOUSE LOCATION
   window.addEventListener('mousemove', function(event) {
     this.mouse = [event.clientX, event.clientY];
-    // return [event.clientX, event.clientY];
   });
 }
 
@@ -204,14 +178,14 @@ function draw() {
 
 
   // drawArrays(primatitve shape, start index, number of values to be rendered)
-  // gl.drawArrays(gl.TRIANGLES, 0, 6); // draw the `L`s
-  // gl.drawArrays(gl.TRIANGLE_FAN, 6, numberOfTriangles); // draw the `O`
-  gl.drawArrays(gl.TRIANGLE_FAN, numberOfTriangles + 6, 4); // draw the X line
-  gl.drawArrays(gl.TRIANGLE_FAN, numberOfTriangles + 10, 4); // draw the Y line
+  gl.drawArrays(gl.TRIANGLES, 0, 6); // draw the `L`s
+  gl.drawArrays(gl.TRIANGLE_FAN, 6, numberOfTriangles); // draw the `O`
+  // gl.drawArrays(gl.TRIANGLE_FAN, numberOfTriangles + 6, 4); // draw the X line
+  // gl.drawArrays(gl.TRIANGLE_FAN, numberOfTriangles + 10, 4); // draw the Y line
 
 
   // window.requestAnimationFrame(callback);
-  if (derp == true) {
+  if (animationBool == true) {
     requestAnimationFrame(draw);
   }
 }
