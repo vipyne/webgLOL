@@ -40,23 +40,16 @@ util = {
       var mouseY = thisMouse[1];
       var xCoord = mouseX - halfCanvasWidth;
       var yCoord = mouseY - halfCanvasHeight;
-      var XangleTemp = mouseY/mouseX;
-      var YangleTemp = 180 - (XangleTemp + 90);
 
-      var sqX = (mouseX - halfCanvasWidth) * (mouseX - halfCanvasWidth);
-      var sqY = (mouseY - halfCanvasHeight) * (mouseY - halfCanvasHeight);
+      var sqX = xCoord * xCoord;
+      var sqY = yCoord * yCoord;
 
       var hypotenuseLength = Math.sqrt(sqX + sqY);
       var normalizedX = xCoord/hypotenuseLength;
       var normalizedY = yCoord/hypotenuseLength;
 
-      // var xAngle = normalizedX / normalizedY;
-      // var xRad = Math.cos( xAngle );
-      // var xDegrees = xRad * 180 / Math.PI;
-      // var yDegrees = 180 - (xDegrees + 90);
-      // var yRad = (yDegrees * Math.PI) / 180; // all the math i tried that i apparently did not need to do.
-
-      var atan2thingMouse = Math.atan2(normalizedY, normalizedX); // this produces the angle for the sin/cos calculations...!
+      // this produces the angle for the sin/cos calculations...!
+      var atan2thingMouse = Math.atan2(normalizedY, normalizedX);
 
       // rotation matrix:
       return [Math.cos(atan2thingMouse), -Math.sin( atan2thingMouse ), 0, 0,
@@ -64,10 +57,18 @@ util = {
                0,                                                   0, 1, 0,
                0,                                                   0, 0, 1]
              }
+
+      // all the math i tried that i apparently did not need to do.
+      // var xAngle = normalizedX / normalizedY;
+      // var xRad = Math.cos( xAngle );
+      // var xDegrees = xRad * 180 / Math.PI;
+      // var yDegrees = 180 - (xDegrees + 90);
+      // var yRad = (yDegrees * Math.PI) / 180;
+      // var XangleTemp = mouseY/mouseX;
+      // var YangleTemp = 180 - (XangleTemp + 90);
   }
 }
 var animationBool = true; // useful for debugging
-
 
 function createShaders() {
   // time to throw some shade
