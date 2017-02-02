@@ -11,9 +11,9 @@ I'd like to eventually have an explanatory comment for every line of code in eac
 * `3-taste the rainbow` - animating colors
 * `4-high school math` - remembering linear algebra
 * `5-turn around flip it and reverse it` - rotating the matrix
+* `6-you spin me right round` - interactive events and atan2
 * `10-boxing day` - 3D spinning cube **current master*
 
 Works in progress...
 --------------
-* `6-move it along` - interactive events
-* `9-you spin me right round` - tbd
+* `7-move it along` - tbd
