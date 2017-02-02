@@ -1,4 +1,5 @@
-# high school math
+# you spin me right round
 
-i've been watching [these](https://www.khanacademy.org/math/linear-algebra)
+using [atan2](https://en.wikipedia.org/wiki/Atan2) to spin matrix to follow mouse movement.
+
 
