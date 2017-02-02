@@ -1,3 +1,6 @@
+//                           spin
+// version from 6-you_spin_me_right_round
+
 var webglolCanvas,
     gl,
     webglolProgram;

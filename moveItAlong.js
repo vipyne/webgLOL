@@ -1,3 +1,5 @@
+// current version...
+
 function webglol() {
   // get canvas element
   var webglolCanvas = document.getElementById('webglol');
