@@ -1,6 +1,3 @@
-//                           spin
-// version from 6-you_spin_me_right_round
-
 var webglolCanvas,
     gl,
     webglolProgram;
@@ -10,6 +7,7 @@ var mouseLocation;
 this.mouse = [400, 300]; // init value
 var thatMouse = this.mouse;
 var triangleAttributePosition;
+var colorPosition;
 var resolutionLocation;
 var shadersPointerToWorldMatrix;
 var time;
@@ -17,6 +15,11 @@ this.startTime = this.startTime ? this.startTime : new Date().getTime() / 10000;
 var timeLocation;
 var numberOfTriangles = 100;
 var vertices = [];
+var cosR;
+var sinR;
+var angleCounter = 360.0;
+var u_model_mLocation;
+var u_camera_m;
 
 function init() {
   webglolInit();
@@ -36,39 +39,30 @@ function webglolInit() {
 }
 util = {
   matrix : {
-    world : function(thisMouse) {
-      var halfCanvasWidth = webglolCanvas.width/2;
-      var halfCanvasHeight = webglolCanvas.height/2;
-      var mouseX = thisMouse[0];
-      var mouseY = thisMouse[1];
-      var xCoord = mouseX - halfCanvasWidth;
-      var yCoord = mouseY - halfCanvasHeight;
+    world : function(angle) {
+      var radian = Math.PI * angle / 180.0;
+      cosR = Math.cos(radian);
+      sinR = Math.sin(radian);
 
-      var sqX = xCoord * xCoord;
-      var sqY = yCoord * yCoord;
+      // rotation way 2; (usual)
+      var cos = Math.cos(radian);
+      var sin = Math.sin(radian);
+      return {
 
-      var hypotenuseLength = Math.sqrt(sqX + sqY);
-      var normalizedX = xCoord/hypotenuseLength;
-      var normalizedY = yCoord/hypotenuseLength;
-
-      // this produces the angle for the sin/cos calculations...!
-      var atan2thingMouse = Math.atan2(normalizedY, normalizedX);
-
-      // rotation matrix:
-      return [Math.cos(atan2thingMouse), -Math.sin( atan2thingMouse ), 0, 0,
-              Math.sin( atan2thingMouse ),  Math.cos(atan2thingMouse), 0, 0,
-               0,                                                   0, 1, 0,
-               0,                                                   0, 0, 1]
-             }
-
-      // all the math i tried that i apparently did not need to do.
-      // var xAngle = normalizedX / normalizedY;
-      // var xRad = Math.cos( xAngle );
-      // var xDegrees = xRad * 180 / Math.PI;
-      // var yDegrees = 180 - (xDegrees + 90);
-      // var yRad = (yDegrees * Math.PI) / 180;
-      // var XangleTemp = mouseY/mouseX;
-      // var YangleTemp = 180 - (XangleTemp + 90);
+      matrixX : [1,   0,   0, 0, // X
+                 0, cos,-sin, 0,
+                 0, sin, cos, 0,
+                 0,   0,   0, 1],
+      matrixY : [cos, 0, sin, 0, // Y
+                 0,   1,   0, 0,
+                -sin, 0, cos, 0,
+                 0,   0,   0, 1],
+      matrixZ : [cos,-sin, 0, 0, // Z
+                 sin, cos, 0, 0,
+                 0,   0,   1, 0,
+                 0,   0,   0, 1]
+      }
+    }
   }
 }
 var animationBool = true; // useful for debugging
@@ -104,22 +98,35 @@ function locateShaderAttributes() {
   // app <------ card
   triangleAttributePosition = gl.getAttribLocation(webglolProgram, 'pos');
 
+  colorLocation = gl.getAttribLocation(webglolProgram, 'aVertexColor');
+
   // set the resolution
   resolutionLocation = gl.getUniformLocation(webglolProgram, 'u_resolution');
   gl.uniform2f(resolutionLocation, webglolCanvas.width, webglolCanvas.height);
 
-  shadersPointerToWorldMatrix = gl.getUniformLocation(webglolProgram, 'world');
-
   // timing
-  time = new Date().getTime() / 10000 - this.startTime;
-  timeLocation = gl.getUniformLocation(webglolProgram, 'u_time');
+  this.startTime = this.startTime ? this.startTime : new Date().getTime() / 10000;
+  var time = new Date().getTime() / 10000 - this.startTime;
+  var timeLocation = gl.getUniformLocation(webglolProgram, 'u_time');
   gl.uniform1f(timeLocation, time);
 
-  mouseLocation = gl.getUniformLocation(webglolProgram, 'u_mouse');
-  gl.uniform2f(mouseLocation, this.mouse[0]/webglolCanvas.width, this.mouse[1],webglolCanvas.height);
+  var u_cosLocation = gl.getUniformLocation(webglolProgram, 'u_cos');
+  var u_sinLocation = gl.getUniformLocation(webglolProgram, 'u_sin');
+  gl.uniform1f(u_cosLocation, cosR);
+  gl.uniform1f(u_sinLocation, sinR);
+
+  u_model_mLocation = gl.getUniformLocation(webglolProgram, 'u_model_m');
+  u_camera_mLocation = gl.getUniformLocation(webglolProgram, 'u_camera_m');
+
 }
 
 function createVertices() {
+  // center dot
+  vertices.push( -0.01,  0.01, 0.0,
+                 -0.01, -0.01, 0.0,
+                  0.01,  0.01, 0.0,
+                  0.01, -0.01, 0.0); // actually a square
+
   // `L`s
   vertices.push( -0.5, 0.0, 0.0,
                  -1.5, 0.0, 0.0,
@@ -132,7 +139,7 @@ function createVertices() {
   degreesPerTriangle = (4 * Math.PI) / numberOfTriangles;
   centerX = 0.5;
 
-  for(var i = 6; i < numberOfTriangles + 6; i++) {
+  for(var i = 10; i < numberOfTriangles + 11; i++) {
     var index = i * 3;
     var angle = degreesPerTriangle * i;
     var scale = 2;
@@ -170,23 +177,46 @@ function draw() {
   //// gl.clear(gl.COLOR_BUFFER_BIT || gl.DEPTH_BUFFER_BIT || gl.STENCIL_BUFFER_BIT)
   gl.clear(gl.COLOR_BUFFER_BIT);
 
+  gl.uniformMatrix4fv(shadersPointerToWorldMatrix, false, new Float32Array(util.matrix.world(this.mouse)));
 
   gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
-  gl.bufferData(gl.ARRAY_BUFFER, verticesFloatArray, gl.STATIC_DRAW);
-
+  gl.bufferData(gl.ARRAY_BUFFER, verticesFloatArray, gl.DYNAMIC_DRAW);
   gl.enableVertexAttribArray(triangleAttributePosition);
   gl.vertexAttribPointer(triangleAttributePosition, 3, gl.FLOAT, false, 0, 0);
 
-  gl.uniformMatrix4fv(shadersPointerToWorldMatrix, false, new Float32Array(util.matrix.world(this.mouse)));
-  gl.enableVertexAttribArray(shadersPointerToWorldMatrix);
+  ///// %%%%%
+  var colorBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+  var red    = [1.0, 0.0, 0.0, 1.0,
+                1.0, 0.0, 0.0, 1.0,
+                1.0, 0.0, 0.0, 1.0,
+                1.0, 0.0, 0.0, 1.0];
 
+  var verticesLength = vertices.length;
+  var colorArray = new Float32Array(verticesLength);
+    colorArray.set([1.0, -1.0, -1.0,
+    1.0, -1.0, -1.0,
+    1.0, -1.0, -1.0,
+    1.0, -1.0, -1.0], 0);
+
+  gl.bufferData(gl.ARRAY_BUFFER, colorArray, gl.DYNAMIC_DRAW);
+  gl.enableVertexAttribArray(colorLocation);
+  gl.vertexAttribPointer(colorLocation, 3, gl.FLOAT, false, 0, 0);
+  ///// %%%%%
+
+  if (angleCounter === 0.0) {
+    angleCounter = 360.0;
+  } else {
+    angleCounter -= 1.0;
+  }
+  // second arg is always set to false-- this is to preserve arg order of same function in openGL
+  gl.uniformMatrix4fv(u_model_mLocation, false, new Float32Array(util.matrix.world(angleCounter).matrixX));
+  gl.uniformMatrix4fv(u_camera_mLocation, false, new Float32Array(util.matrix.world(angleCounter).matrixY));
 
   // drawArrays(primatitve shape, start index, number of values to be rendered)
-  gl.drawArrays(gl.TRIANGLES, 0, 6); // draw the `L`s
-  gl.drawArrays(gl.TRIANGLE_FAN, 6, numberOfTriangles); // draw the `O`
-  // gl.drawArrays(gl.TRIANGLE_FAN, numberOfTriangles + 6, 4); // draw the X line
-  // gl.drawArrays(gl.TRIANGLE_FAN, numberOfTriangles + 10, 4); // draw the Y line
-
+  gl.drawArrays(gl.TRIANGLES, 4, 6); // draw the `L`s
+  gl.drawArrays(gl.TRIANGLE_FAN, 10, numberOfTriangles - 9); // draw the `O`
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4); // draw the center dot
 
   // window.requestAnimationFrame(callback);
   if (animationBool == true) {
