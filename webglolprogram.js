@@ -19,7 +19,7 @@ var cosR;
 var sinR;
 var angleCounter = 360.0;
 var u_model_mLocation;
-var u_camera_m;
+var u_camera_mLocation;
 
 function init() {
   webglolInit();
@@ -98,7 +98,8 @@ function locateShaderAttributes() {
   // app <------ card
   triangleAttributePosition = gl.getAttribLocation(webglolProgram, 'pos');
 
-  colorLocation = gl.getAttribLocation(webglolProgram, 'aVertexColor');
+  // will use this in the future
+  // colorLocation = gl.getAttribLocation(webglolProgram, 'aVertexColor');
 
   // set the resolution
   resolutionLocation = gl.getUniformLocation(webglolProgram, 'u_resolution');
@@ -184,30 +185,26 @@ function draw() {
   gl.enableVertexAttribArray(triangleAttributePosition);
   gl.vertexAttribPointer(triangleAttributePosition, 3, gl.FLOAT, false, 0, 0);
 
-  ///// %%%%%
-  var colorBuffer = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-  var red    = [1.0, 0.0, 0.0, 1.0,
-                1.0, 0.0, 0.0, 1.0,
-                1.0, 0.0, 0.0, 1.0,
-                1.0, 0.0, 0.0, 1.0];
+  // /// %%%%% for future use
+  // var colorBuffer = gl.createBuffer();
+  // gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
 
-  var verticesLength = vertices.length;
-  var colorArray = new Float32Array(verticesLength);
-    colorArray.set([1.0, -1.0, -1.0,
-    1.0, -1.0, -1.0,
-    1.0, -1.0, -1.0,
-    1.0, -1.0, -1.0], 0);
+  // var verticesLength = vertices.length;
+  // var colorArray = new Float32Array(verticesLength);
+  //   colorArray.set([1.0, -1.0, -1.0,
+  //   1.0, -1.0, -1.0,
+  //   1.0, -1.0, -1.0,
+  //   1.0, -1.0, -1.0], 0);
 
-  gl.bufferData(gl.ARRAY_BUFFER, colorArray, gl.DYNAMIC_DRAW);
-  gl.enableVertexAttribArray(colorLocation);
-  gl.vertexAttribPointer(colorLocation, 3, gl.FLOAT, false, 0, 0);
-  ///// %%%%%
+  // gl.bufferData(gl.ARRAY_BUFFER, colorArray, gl.DYNAMIC_DRAW);
+  // gl.enableVertexAttribArray(colorLocation);
+  // gl.vertexAttribPointer(colorLocation, 3, gl.FLOAT, false, 0, 0);
+  // /// %%%%%
 
   if (angleCounter === 0.0) {
     angleCounter = 360.0;
   } else {
-    angleCounter -= 1.0;
+    angleCounter -= 0.5;
   }
   // second arg is always set to false-- this is to preserve arg order of same function in openGL
   gl.uniformMatrix4fv(u_model_mLocation, false, new Float32Array(util.matrix.world(angleCounter).matrixX));
