@@ -5,7 +5,7 @@
   var daysHTML = document.getElementById('webglol'),
       docFrag  = document.createDocumentFragment(),
       // update this number as the chronicles continue.
-      numberOfDoneSketches = 8;
+      numberOfDoneSketches = 10;
 
 
   for (var row = 1; row <= 1; row++) {

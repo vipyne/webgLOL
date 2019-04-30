@@ -55,4 +55,4 @@ adding some depth to the whole thing.
 
 wip: not sure how this will go
 
-### `10-tbd` - tbd
+### `10-i am a fan` - interactive visual of how circle is constructed

@@ -2,9 +2,9 @@ var webglolCanvas,
     gl,
     webglolProgram;
 
-var verticesFloatArray;
+this.verticesFloatArray;
 var mouseLocation;
-this.mouse = [400, 300]; // init value
+this.mouse = [10, 550]; // init value
 var thatMouse = this.mouse;
 var triangleAttributePosition;
 var resolutionLocation;
@@ -12,7 +12,7 @@ var shadersPointerToWorldMatrix;
 var time;
 this.startTime = this.startTime ? this.startTime : new Date().getTime() / 10000;
 var timeLocation;
-var numberOfTriangles = 100;
+this.numberOfTriangles = 0;
 var vertices = [];
 
 function init() {
@@ -31,34 +31,7 @@ function webglolInit() {
   gl = webglolCanvas.getContext('experimental-webgl');
   webglolProgram = gl.createProgram();
 }
-util = {
-  matrix : {
-    world : function(thisMouse) {
-      var halfCanvasWidth = webglolCanvas.width/2;
-      var halfCanvasHeight = webglolCanvas.height/2;
-      var mouseX = thisMouse[0];
-      var mouseY = thisMouse[1];
-      var xCoord = mouseX - halfCanvasWidth;
-      var yCoord = mouseY - halfCanvasHeight;
 
-      var sqX = xCoord * xCoord;
-      var sqY = yCoord * yCoord;
-
-      var hypotenuseLength = Math.sqrt(sqX + sqY);
-      var normalizedX = xCoord/hypotenuseLength;
-      var normalizedY = yCoord/hypotenuseLength;
-
-      // this produces the angle for the sin/cos calculations...!
-      var atan2thingMouse = Math.atan2(normalizedY, normalizedX);
-
-      // rotation matrix:
-      return [Math.cos(atan2thingMouse), -Math.sin( atan2thingMouse ), 0, 0,
-              Math.sin( atan2thingMouse ),  Math.cos(atan2thingMouse), 0, 0,
-               0,                                                   0, 1, 0,
-               0,                                                   0, 0, 1]
-             }
-  }
-}
 var animationBool = true; // useful for debugging
 
 function createShaders() {
@@ -116,20 +89,6 @@ function createVertices() {
                   0.5, 0.0, 0.0,
                   1.5, 0.0, 0.0 ); // second `L`
 
-  // `O`
-  degreesPerTriangle = (4 * Math.PI) / numberOfTriangles;
-  centerX = 0.5;
-
-  for(var i = 6; i < numberOfTriangles + 6; i++) {
-    var index = i * 3;
-    var angle = degreesPerTriangle * i;
-    var scale = 2;
-
-    vertices[index] = Math.cos(angle) / scale;               // x
-    vertices[index + 1] = Math.sin(angle) / scale + centerX; // y
-    vertices[index + 2] = 0;                                 // z
-  }
-
   // add x y cartesian guides
   vertices.push( -0.01, 1.0, 0.0,
                   0.01, 1.0, 0.0,
@@ -141,12 +100,57 @@ function createVertices() {
                  -1.0, -0.01, 0.0,
                  -1.0, 0.01, 0.0); // Y line
 
-  verticesFloatArray = new Float32Array(vertices);
 
-  // MOUSE LOCATION
-  window.addEventListener('mousemove', function(event) {
-    this.mouse = [event.clientX, event.clientY];
-  });
+  // `O`
+  degreesPerTriangle = (4 * Math.PI) / 100;
+  // degreesPerTriangle = (4 * Math.PI) / this.numberOfTriangles;
+  centerX = 0.5;
+
+  var i = 14
+
+  for(i; i < this.numberOfTriangles + 6; i++) {
+    var index = i * 3;
+    var angle = degreesPerTriangle * i;
+    console.log('degreesPerTriangle', degreesPerTriangle)
+    var scale = 2;
+    console.log('angle', angle)
+
+    vertices[index] = Math.cos(angle) / scale;               // x
+    vertices[index + 1] = Math.sin(angle) / scale + centerX; // y
+    vertices[index + 2] = 0;                                 // z
+  }
+
+  this.verticesFloatArray = new Float32Array(vertices);
+
+  // // MOUSE LOCATION
+  // window.addEventListener('mousemove', function(event) {
+  //   this.mouse = [event.clientX, event.clientY];
+  // });
+
+  window.addEventListener('click', function(event) {
+    console.log('this.numberOfTriangles', this.numberOfTriangles)
+    // console.log('i', i)
+    this.numberOfTriangles += 1;
+
+    // // `O`
+    // degreesPerTriangle = (4 * Math.PI) / this.numberOfTriangles;
+    // centerX = 0.5;
+    console.log('degreesPerTriangle', degreesPerTriangle)
+
+    // for(var i = 6; i < this.numberOfTriangles + 6; i++) {
+      var index = i * 3;
+      var angle = degreesPerTriangle * i;
+      var scale = 2;
+      console.log('angle', angle)
+
+      vertices[index] = Math.cos(angle) / scale;               // x
+      vertices[index + 1] = Math.sin(angle) / scale + centerX; // y
+      vertices[index + 2] = 0;                                 // z
+      i++;
+    // }
+
+    this.verticesFloatArray = new Float32Array(vertices);
+  })
 }
 
 function draw() {
@@ -158,29 +162,25 @@ function draw() {
   //// gl.clear(gl.COLOR_BUFFER_BIT || gl.DEPTH_BUFFER_BIT || gl.STENCIL_BUFFER_BIT)
   gl.clear(gl.COLOR_BUFFER_BIT);
 
-
   gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
-  gl.bufferData(gl.ARRAY_BUFFER, verticesFloatArray, gl.STATIC_DRAW);
+  gl.bufferData(gl.ARRAY_BUFFER, this.verticesFloatArray, gl.STATIC_DRAW);
 
   gl.enableVertexAttribArray(triangleAttributePosition);
   gl.vertexAttribPointer(triangleAttributePosition, 3, gl.FLOAT, false, 0, 0);
 
-  gl.uniformMatrix4fv(shadersPointerToWorldMatrix, false, new Float32Array(util.matrix.world(this.mouse)));
-  gl.enableVertexAttribArray(shadersPointerToWorldMatrix);
-
-
   // drawArrays(primatitve shape, start index, number of values to be rendered)
   gl.drawArrays(gl.TRIANGLES, 0, 6); // draw the `L`s
-  gl.drawArrays(gl.TRIANGLE_FAN, 6, numberOfTriangles); // draw the `O`
-  // gl.drawArrays(gl.TRIANGLE_FAN, numberOfTriangles + 6, 4); // draw the X line
-  // gl.drawArrays(gl.TRIANGLE_FAN, numberOfTriangles + 10, 4); // draw the Y line
-
+  // gl.drawArrays(gl.TRIANGLE_FAN, 6, 4); // draw the X line
+  // gl.drawArrays(gl.TRIANGLE_FAN, 10, 4); // draw the Y line
+  // gl.drawArrays(gl.TRIANGLE_FAN, 14, this.numberOfTriangles); // draw the `O`
+  // gl.drawArrays(gl.POINTS, 14, this.numberOfTriangles); // draw the `O`
 
   // window.requestAnimationFrame(callback);
   if (animationBool == true) {
     requestAnimationFrame(draw);
   }
 }
+
 
 window.onload = init;
 // setInterval(webglol, 500);
