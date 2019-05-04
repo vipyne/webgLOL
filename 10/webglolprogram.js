@@ -13,6 +13,7 @@ var time;
 this.startTime = this.startTime ? this.startTime : new Date().getTime() / 10000;
 var timeLocation;
 this.numberOfTriangles = 0;
+var maxNumberOfTriangles = 50;
 var vertices = [];
 
 function init() {
@@ -102,52 +103,27 @@ function createVertices() {
 
 
   // `O`
-  degreesPerTriangle = (4 * Math.PI) / 100;
-  // degreesPerTriangle = (4 * Math.PI) / this.numberOfTriangles;
+  degreesPerTriangle = (2 * Math.PI) / maxNumberOfTriangles;
+  console.log('degreesPerTriangle', degreesPerTriangle)
   centerX = 0.5;
 
-  var i = 14
+  var i = 14; // start adding to the `vertices` array after the `L`s and the `X` & `Y` lines
 
-  for(i; i < this.numberOfTriangles + 6; i++) {
+  this.verticesFloatArray = new Float32Array(vertices);
+
+  window.addEventListener('click', function(event) {
+    this.numberOfTriangles = Math.min(this.numberOfTriangles += 1, maxNumberOfTriangles);
+    console.log('this.numberOfTriangles', this.numberOfTriangles)
+
+    // // `O`
     var index = i * 3;
     var angle = degreesPerTriangle * i;
-    console.log('degreesPerTriangle', degreesPerTriangle)
     var scale = 2;
-    console.log('angle', angle)
 
     vertices[index] = Math.cos(angle) / scale;               // x
     vertices[index + 1] = Math.sin(angle) / scale + centerX; // y
     vertices[index + 2] = 0;                                 // z
-  }
-
-  this.verticesFloatArray = new Float32Array(vertices);
-
-  // // MOUSE LOCATION
-  // window.addEventListener('mousemove', function(event) {
-  //   this.mouse = [event.clientX, event.clientY];
-  // });
-
-  window.addEventListener('click', function(event) {
-    console.log('this.numberOfTriangles', this.numberOfTriangles)
-    // console.log('i', i)
-    this.numberOfTriangles += 1;
-
-    // // `O`
-    // degreesPerTriangle = (4 * Math.PI) / this.numberOfTriangles;
-    // centerX = 0.5;
-    console.log('degreesPerTriangle', degreesPerTriangle)
-
-    // for(var i = 6; i < this.numberOfTriangles + 6; i++) {
-      var index = i * 3;
-      var angle = degreesPerTriangle * i;
-      var scale = 2;
-      console.log('angle', angle)
-
-      vertices[index] = Math.cos(angle) / scale;               // x
-      vertices[index + 1] = Math.sin(angle) / scale + centerX; // y
-      vertices[index + 2] = 0;                                 // z
-      i++;
-    // }
+    i++;
 
     this.verticesFloatArray = new Float32Array(vertices);
   })
@@ -174,7 +150,7 @@ function draw() {
   gl.drawArrays(gl.TRIANGLE_FAN, 6, 4); // draw the X line
   gl.drawArrays(gl.TRIANGLE_FAN, 10, 4); // draw the Y line
   gl.drawArrays(gl.TRIANGLE_FAN, 14, this.numberOfTriangles); // draw the `O`
-  gl.drawArrays(gl.POINTS, 14, this.numberOfTriangles); // draw the `O`
+  gl.drawArrays(gl.POINTS, 14, this.numberOfTriangles); // draw the points in the `O`
 
 
   // window.requestAnimationFrame(callback);
