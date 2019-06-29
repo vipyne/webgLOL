@@ -12,7 +12,7 @@ var shadersPointerToWorldMatrix;
 var time;
 this.startTime = this.startTime ? this.startTime : new Date().getTime() / 10000;
 var timeLocation;
-this.numberOfTriangles = 0;
+this.numberOfTriangles = 50;
 var maxNumberOfTriangles = 50;
 var vertices = [];
 
@@ -82,24 +82,24 @@ function locateShaderAttributes() {
 }
 
 function createVertices() {
-  // `L`s
-  vertices.push( -0.5, 0.0, 0.0,
-                 -1.5, 0.0, 0.0,
-                 -1.5, 1.0, 0.0, // first `L`
-                  0.5, 1.0, 0.0,
-                  0.5, 0.0, 0.0,
-                  1.5, 0.0, 0.0 ); // second `L`
+  // // `L`s
+  // vertices.push( -0.5, 0.0, 0.0,
+  //                -1.5, 0.0, 0.0,
+  //                -1.5, 1.0, 0.0, // first `L`
+  //                 0.5, 1.0, 0.0,
+  //                 0.5, 0.0, 0.0,
+  //                 1.5, 0.0, 0.0 ); // second `L`
 
-  // add x y cartesian guides
-  vertices.push( -0.01, 1.0, 0.0,
-                  0.01, 1.0, 0.0,
-                  0.01, -1.0, 0.0,
-                 -0.01, -1.0, 0.0); // X line
+  // // add x y cartesian guides
+  // vertices.push( -0.01, 1.0, 0.0,
+  //                 0.01, 1.0, 0.0,
+  //                 0.01, -1.0, 0.0,
+  //                -0.01, -1.0, 0.0); // X line
 
-  vertices.push( 1.0, 0.01, 0.0,
-                 1.0, -0.01, 0.0,
-                 -1.0, -0.01, 0.0,
-                 -1.0, 0.01, 0.0); // Y line
+  // vertices.push( 1.0, 0.01, 0.0,
+  //                1.0, -0.01, 0.0,
+  //                -1.0, -0.01, 0.0,
+  //                -1.0, 0.01, 0.0); // Y line
 
 
   // `O`
@@ -107,18 +107,20 @@ function createVertices() {
   console.log('degreesPerTriangle', degreesPerTriangle)
   centerX = 0.5;
 
-  var i = 14; // start adding to the `vertices` array after the `L`s and the `X` & `Y` lines
+  // var i = 14; // start adding to the `vertices` array after the `L`s and the `X` & `Y` lines
+  var i = 0; // start adding to the `vertices` array after the `L`s and the `X` & `Y` lines
 
   this.verticesFloatArray = new Float32Array(vertices);
 
-  window.addEventListener('click', function(event) {
+  for (; i < this.numberOfTriangles;) {
+  // window.addEventListener('click', function(event) {
     this.numberOfTriangles = Math.min(this.numberOfTriangles += 1, maxNumberOfTriangles);
     console.log('this.numberOfTriangles', this.numberOfTriangles)
 
     // // `O`
     var index = i * 3;
     var angle = degreesPerTriangle * i;
-    var scale = 2;
+    var scale = 0.5;
 
     vertices[index] = Math.cos(angle) / scale;               // x
     vertices[index + 1] = Math.sin(angle) / scale + centerX; // y
@@ -126,7 +128,8 @@ function createVertices() {
     i++;
 
     this.verticesFloatArray = new Float32Array(vertices);
-  })
+  }
+  // )
 }
 
 function draw() {
@@ -149,16 +152,17 @@ function draw() {
   gl.drawArrays(gl.TRIANGLES, 0, 6); // draw the `L`s
   gl.drawArrays(gl.TRIANGLE_FAN, 6, 4); // draw the X line
   gl.drawArrays(gl.TRIANGLE_FAN, 10, 4); // draw the Y line
-  gl.drawArrays(gl.TRIANGLE_FAN, 14, this.numberOfTriangles); // draw the `O`
-  gl.drawArrays(gl.POINTS, 14, this.numberOfTriangles); // draw the points in the `O`
-
+  gl.drawArrays(gl.TRIANGLE_FAN, 0, this.numberOfTriangles); // draw the `O`
+  gl.drawArrays(gl.POINTS, 0, this.numberOfTriangles); // draw the points in the `O`
+  // gl.drawArrays(gl.TRIANGLE_FAN, 14, this.numberOfTriangles); // draw the `O`
+  // gl.drawArrays(gl.POINTS, 14, this.numberOfTriangles); // draw the points in the `O`
+// console.log('drawn')
 
   // window.requestAnimationFrame(callback);
   if (animationBool == true) {
     requestAnimationFrame(draw);
   }
 }
-
 
 window.onload = init;
 // setInterval(webglol, 500);
