@@ -4,35 +4,44 @@
   <meta charset="utf-8" />
   <title>webGLOL</title>
 </head>
-<body>
+<body style="background-color:red;">
 
 <script id="vertex-shader" type="x-shader/x-vertex">
-// attribute- input value that changes the vertices
-// vec3- 3D floating point vector
 attribute vec3 pos;
+attribute vec2 a_texcoord;
+
+varying vec2 v_texcoord;
+
 void main() {
-  // gl_Position- 4D vector representing the final processed vertex position
-  // x, y, z are values are passed in... 4th is a scaling thing.
-  gl_Position = vec4(pos, 2.0);
+  gl_Position = vec4(pos, 1.0);
+
+  v_texcoord = a_texcoord;
 }
 </script>
 
 <script id="fragment-shader" type="x-shader/x-fragment">
+precision mediump float;
+
+varying vec2 v_texcoord;
+uniform sampler2D u_texture;
+
 void main() {
-  // gl_FragColor- 4D vector [ R, G, B, A ]
-  gl_FragColor = vec4(0.2, 0.8 ,0.6 ,1.0);
+  gl_FragColor = texture2D(u_texture, v_texcoord);
 }
 </script>
 
 <script type="text/javascript">
 
-function webglol() {
+
+
+async function webglol() {
+  var image = new Image();
+
   // get canvas element
   var webglolCanvas = document.getElementById('webglol');
   // define WebGLRenderingContext
   //// getContext(context, options)
   var gl = webglolCanvas.getContext('experimental-webgl');
-
   // Specify the color values used when clearing color buffers.
   //// gl.clearColor(red, green, blue, alpha)
   gl.clearColor(0, 0, 0, .2);
@@ -66,32 +75,86 @@ function webglol() {
   gl.linkProgram(webglolProgram);
   gl.useProgram(webglolProgram);
 
-  // ... need to figure out how to explain this
   var triangleAttributePosition = gl.getAttribLocation(webglolProgram, 'pos');
 
   var vertices = [];
 
   // 3 points of triangle each X, Y, Z
   // [ X, Y, Z, X, Y, Z, X, Y, Z ]
-  vertices.push( -0.5, 0.0, 0.0,
-                 -1.5, 0.0, 0.0,
-                 -1.5, 1.0, 0.0);
+  vertices.push( -1, 1, 0.0,
+                 1, -1, 0.0,
+                 -1, -1, 0.0,
+
+                 1, 1, 0.0,
+                -1, 1, 0.0,
+                1, -1, 0.0 
+  );
 
   var verticesFloatArray = new Float32Array(vertices);
 
-  // TODO: figure out what these do
   gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
   gl.bufferData(gl.ARRAY_BUFFER, verticesFloatArray, gl.DYNAMIC_DRAW);
   gl.enableVertexAttribArray(triangleAttributePosition);
   gl.vertexAttribPointer(triangleAttributePosition, 3, gl.FLOAT, false, 0, 0);
 
+/////////
+/// texture\
+  // shamelessly copied from https://webglfundamentals.org/webgl/lessons/webgl-3d-textures.html
+  ////////
+  // Create a texture.
+var texture = gl.createTexture();
+gl.bindTexture(gl.TEXTURE_2D, texture);
+ 
+// Fill the texture with a 1x1 blue pixel.
+gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
+              new Uint8Array([0, 0, 255, 255]));
+  var verticesTex = [];
+
+  verticesTex.push(
+    0, 0,
+    1, 1,
+    0, 1,
+
+    1, 0,
+    0, 0,
+    1, 1
+  );
+
+  var verticesTexFloatArray = new Float32Array(verticesTex);
+
+  var texcoordLocation = gl.getAttribLocation(webglolProgram, "a_texcoord");
+var buffer = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+gl.enableVertexAttribArray(texcoordLocation);
+ 
+// We'll supply texcoords as floats.
+gl.vertexAttribPointer(texcoordLocation, 2, gl.FLOAT, false, 0, 0);
+ 
+ gl.bufferData(gl.ARRAY_BUFFER, verticesTexFloatArray, gl.DYNAMIC_DRAW);
+
+  const img = document.getElementById('pup')
+  window.bitmap = await createImageBitmap(img)
+// Asynchronously load an image
+image.src = "pup.png";
+  ////////
+image.addEventListener('load', function() {
+  console.log("_____index.html pups loaded")
+  gl.bindTexture(gl.TEXTURE_2D, texture);
+
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA,gl.UNSIGNED_BYTE, window.bitmap);
+  // ^^^^^^^ this is the magic here that draws the bitmap to canvas
+  
+  gl.generateMipmap(gl.TEXTURE_2D);
+  console.log("_____index.html draw arrays")
   // drawArrays(primatitve shape, start index, number of values to be rendered)
-  gl.drawArrays(gl.TRIANGLES, 0, 3);
+  gl.drawArrays(gl.TRIANGLES, 0, 6);
+});
 }
 
 window.onload = webglol;
 
 </script>
 <canvas id="webglol" width="600" height="600"></canvas>
+<img src="pup_alpha.png" id="pup" width="512" height="512"></img>
 </body>
 </html>
